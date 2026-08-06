@@ -16,7 +16,8 @@ export const metadata: Metadata = {
   title: "Daniel Kombou",
   description: "Personal portfolio of Daniel Kombou - Full Stack Developer",
   icons: {
-    icon: "/icon.jpg",
+    icon: "/favicon.png",
+    apple: "/apple-icon.png",
   },
 };
 
