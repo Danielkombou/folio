@@ -13,8 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Daniel's Portfolio",
-  description: "Personal portfolio of Daniel - Full Stack Developer",
+  title: "Daniel Kombou",
+  description: "Personal portfolio of Daniel Kombou - Full Stack Developer",
   icons: {
     icon: "/icon.jpg",
   },
