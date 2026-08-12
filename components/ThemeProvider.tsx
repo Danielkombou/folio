@@ -48,11 +48,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!ready) return;
-    const resolved = resolveTheme(preference);
-    setTheme(resolved);
-    document.documentElement.classList.toggle("dark", resolved === "dark");
-    document.documentElement.style.colorScheme = resolved;
+    setTheme(resolveTheme(preference));
   }, [preference, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.style.colorScheme = theme;
+  }, [theme, ready]);
 
   useEffect(() => {
     if (preference !== "system") return;
