@@ -38,7 +38,7 @@ export const projects = {
       tags: ["Next.js", "TypeScript", "Tailwind"],
     },
     {
-      title: "Academia",
+      title: "CertiGen",
       description: "Bulk certificate generation from templates with instant PDF export.",
       href: "https://github.com/Danielkombou/Academia-Frontend",
       image: "/projects/academia.png",
