@@ -39,8 +39,8 @@ export function Navbar() {
     <header className="sticky top-0 z-50">
       <motion.nav
         layout
-        className={`mx-auto flex max-w-2xl items-center justify-between border-b border-border bg-background/85 px-5 backdrop-blur-md sm:px-6 ${
-          scrolled ? "py-2.5" : "py-4"
+        className={`mx-auto flex max-w-2xl items-center border-b border-border bg-background/85 px-5 backdrop-blur-md sm:px-6 ${
+          scrolled ? "justify-start py-2.5" : "justify-between py-4"
         }`}
         transition={{ duration: reduce ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
       >

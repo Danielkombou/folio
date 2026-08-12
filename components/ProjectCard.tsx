@@ -8,9 +8,11 @@ import { Reveal } from "./Reveal";
 export function ProjectCard({
   project,
   delay = 0,
+  priority = false,
 }: {
   project: Project;
   delay?: number;
+  priority?: boolean;
 }) {
   return (
     <Reveal delay={delay}>
@@ -25,6 +27,7 @@ export function ProjectCard({
             src={project.image}
             alt={`${project.title} preview`}
             fill
+            priority={priority}
             sizes="(max-width: 640px) 100vw, 320px"
             className="object-cover object-top grayscale transition duration-500 group-hover:scale-[1.02] group-hover:grayscale-0"
           />

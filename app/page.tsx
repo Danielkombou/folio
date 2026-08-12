@@ -53,7 +53,7 @@ export default function Home() {
         </Reveal>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {featured.map((p, i) => (
-            <ProjectCard key={p.title} project={p} delay={i * 0.08} />
+            <ProjectCard key={p.title} project={p} delay={i * 0.08} priority={i === 0} />
           ))}
         </div>
       </section>
