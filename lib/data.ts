@@ -4,6 +4,7 @@ export const site = {
   socials: [
     { label: "GitHub", href: "https://github.com/Danielkombou" },
     { label: "LinkedIn", href: "https://linkedin.com/in/kombou-daniel-b394b92a5" },
+    { label: "X", href: "https://x.com/DanielKomb87182" },
   ],
 };
 
@@ -11,54 +12,74 @@ export const hero = {
   intro:
     "I'm a software engineer building technology that creates opportunities and solves real-world problems. Currently building AttendX.",
   previous:
-    "Frontend Developer & Program Facilitator at Tic Foundation, where I mentor interns and build AI-powered tools for education across Africa.",
+    "Frontend Developer & Program Facilitator at Tic Foundation, where I mentor interns and ship tools for education across Africa.",
   cta: "Let's talk",
+};
+
+export type Project = {
+  title: string;
+  description: string;
+  href: string;
+  image: string;
+  tags?: string[];
 };
 
 export const projects = {
   description:
-    "I build tools/products that solve real problems I face as an engineer, using each project as a chance to learn and grow.",
+    "I build tools that solve problems I run into as an engineer — each one a chance to ship, learn, and improve.",
   items: [
     {
       title: "AttendX",
-      description: "Attendance management built for modern teams.",
+      description: "Smart attendance tracking for modern teams and organizations.",
       href: "https://github.com/Danielkombou",
-      icon: "A",
+      image: "/projects/attendx.png",
+      tags: ["Next.js", "TypeScript", "Tailwind"],
     },
     {
       title: "Academia",
-      description: "AI-powered learning platform for education across Africa.",
+      description: "Bulk certificate generation from templates with instant PDF export.",
       href: "https://github.com/Danielkombou/Academia-Frontend",
-      icon: "Ac",
+      image: "/projects/academia.png",
+      tags: ["React", "PDF", "Node.js"],
     },
-  ],
+  ] satisfies Project[],
 };
 
-export const experiments = {
+export const stack = {
   description:
-    "I love experimenting with Motion and CSS by recreating components I find on the web. Below are some.",
+    "Tools and languages I reach for day to day — from UI to APIs and deployment.",
   items: [
-    {
-      title: "chat-app",
-      description: "Real-time messaging with modern web sockets.",
-      href: "https://github.com/Danielkombou/chat-app",
-      icon: "C",
-    },
-    {
-      title: "dev-syntax",
-      description: "Perfecting the syntax of development.",
-      href: "https://github.com/Danielkombou/dev-syntax",
-      icon: "D",
-    },
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Node.js",
+    "Tailwind CSS",
+    "PostgreSQL",
+    "MongoDB",
+    "Git",
+    "Figma",
+    "Vercel",
   ],
 };
 
 export const writings = {
   description:
-    "I write about engineering, clarity of thought, and the little moments where things click.",
+    "Notes on engineering, mentoring, and the small moments where things finally click.",
   items: [
-    { title: "Building AttendX from scratch", date: "29/05/26", readTime: "5 min read" },
-    { title: "Mentoring the next generation of engineers", date: "15/03/26", readTime: "4 min read" },
-    { title: "Read Your Error Messages", date: "21/01/26", readTime: "3 min read" },
+    {
+      title: "Building AttendX from scratch",
+      date: "29/05/26",
+      readTime: "5 min read",
+    },
+    {
+      title: "Mentoring the next generation of engineers",
+      date: "15/03/26",
+      readTime: "4 min read",
+    },
+    {
+      title: "Read Your Error Messages",
+      date: "21/01/26",
+      readTime: "3 min read",
+    },
   ],
 };
