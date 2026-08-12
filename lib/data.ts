@@ -39,14 +39,14 @@ export const projects = {
       title: "AttendX",
       description: "Smart attendance tracking for modern teams and organizations.",
       href: "https://github.com/Danielkombou",
-      image: "/projects/attendx.png",
+      image: "/projects/attendx.webp",
       tags: ["Next.js", "TypeScript", "Tailwind"],
     },
     {
       title: "Academia",
       description: "Bulk certificate generation from templates with instant PDF export.",
       href: "https://github.com/Danielkombou/Academia-Frontend",
-      image: "/projects/academia.png",
+      image: "/projects/academia.webp",
       tags: ["React", "PDF", "Node.js"],
     },
     {

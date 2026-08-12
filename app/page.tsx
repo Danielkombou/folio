@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Reveal } from "@/components/Reveal";
@@ -91,7 +92,18 @@ export default function Home() {
           <ul className="space-y-5">
             {writings.items.map((w) => (
               <li key={w.slug}>
-                <LinkRow writing={w} />
+                <Link
+                  href={`/writings/${w.slug}`}
+                  className="flex items-center text-base transition-colors hover:text-foreground/70"
+                >
+                  <span className="shrink-0">{w.title}</span>
+                  <span className="dotted-leader" />
+                  <span className="shrink-0 text-right text-sm leading-tight text-muted">
+                    {w.date}
+                    <br />
+                    {w.readTime}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>
@@ -110,26 +122,5 @@ export default function Home() {
 
       <SiteFooter />
     </main>
-  );
-}
-
-function LinkRow({
-  writing,
-}: {
-  writing: (typeof writings.items)[number];
-}) {
-  return (
-    <a
-      href={`/writings/${writing.slug}`}
-      className="flex items-center text-base transition-colors hover:text-foreground/70"
-    >
-      <span className="shrink-0">{writing.title}</span>
-      <span className="dotted-leader" />
-      <span className="shrink-0 text-right text-sm leading-tight text-muted">
-        {writing.date}
-        <br />
-        {writing.readTime}
-      </span>
-    </a>
   );
 }
