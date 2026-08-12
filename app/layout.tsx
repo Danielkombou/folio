@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -14,20 +9,14 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Daniel Kombou",
-  description: "Personal portfolio of Daniel Kombou - Full Stack Developer",
-  icons: {
-    icon: "/favicon.png",
-    apple: "/apple-icon.png",
-  },
+  description: "Software Engineer · Full-Stack · AI & EdTech Builder",
+  icons: { icon: "/favicon.png", apple: "/apple-icon.png" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${jetbrainsMono.variable} antialiased`}>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
