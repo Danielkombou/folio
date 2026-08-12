@@ -25,7 +25,7 @@ export default function ProjectsPage() {
         </div>
       </Reveal>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2">
         {projects.items.map((p, i) => (
           <ProjectCard key={p.title} project={p} delay={Math.min(i * 0.06, 0.24)} />
         ))}
@@ -37,7 +37,7 @@ export default function ProjectsPage() {
             href={site.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-5 py-3 text-sm font-medium transition-colors hover:border-foreground/30 hover:bg-foreground hover:text-background"
+            className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium transition-colors hover:border-foreground/30 hover:bg-foreground hover:text-background"
           >
             See more on GitHub
             <span aria-hidden>→</span>

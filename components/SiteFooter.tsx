@@ -48,7 +48,7 @@ export function SiteFooter() {
           type="button"
           onClick={toggle}
           aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          className="rounded-md border border-border p-2 text-foreground/70 transition-colors hover:border-foreground/30 hover:text-foreground"
+          className="rounded-lg border border-border p-2 text-foreground/70 transition-colors hover:border-foreground/30 hover:text-foreground"
         >
           {theme === "dark" ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

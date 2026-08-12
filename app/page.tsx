@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProjectCard } from "@/components/ProjectCard";
@@ -14,9 +15,19 @@ export default function Home() {
     <main className="mx-auto max-w-2xl space-y-16 px-5 py-10 sm:space-y-20 sm:px-6 sm:py-14">
       <Reveal>
         <section className="space-y-5">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            I&apos;m Daniel.
-          </h1>
+          <div className="flex items-center gap-4">
+            <Image
+              src={site.avatar}
+              alt={site.name}
+              width={64}
+              height={64}
+              priority
+              className="h-14 w-14 rounded-full object-cover ring-1 ring-border sm:h-16 sm:w-16"
+            />
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+              I&apos;m Daniel.
+            </h1>
+          </div>
           <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">
             {hero.intro}
           </p>
@@ -51,7 +62,7 @@ export default function Home() {
             {projects.description}
           </p>
         </Reveal>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
           {featured.map((p, i) => (
             <ProjectCard key={p.title} project={p} delay={i * 0.08} priority={i === 0} />
           ))}
@@ -68,7 +79,7 @@ export default function Home() {
               </svg>
             }
           />
-          <p className="mb-6 text-sm leading-relaxed text-muted sm:text-base">
+          <p className="mb-4 text-sm leading-relaxed text-muted sm:text-base">
             {stack.description}
           </p>
           <StackIcons items={stack.items} />
