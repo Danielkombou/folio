@@ -23,15 +23,15 @@ export function ProjectCard({
         <div className="relative aspect-[16/10] overflow-hidden bg-muted/20">
           <Image
             src={project.image}
-            alt={project.title}
+            alt={`${project.title} preview`}
             fill
-            sizes="(max-width: 640px) 50vw, 280px"
-            className="object-cover object-top grayscale transition duration-500 group-hover:grayscale-0 group-hover:scale-[1.02]"
+            sizes="(max-width: 640px) 100vw, 320px"
+            className="object-cover object-top grayscale transition duration-500 group-hover:scale-[1.02] group-hover:grayscale-0"
           />
         </div>
-        <div className="border-t border-border p-4">
-          <p className="mb-1 text-sm font-semibold">{project.title}</p>
-          <p className="text-xs leading-relaxed text-muted">{project.description}</p>
+        <div className="border-t border-border p-4 sm:p-5">
+          <p className="mb-1.5 text-base font-semibold">{project.title}</p>
+          <p className="text-sm leading-relaxed text-muted">{project.description}</p>
         </div>
       </Link>
     </Reveal>
