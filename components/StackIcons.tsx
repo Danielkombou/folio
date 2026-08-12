@@ -61,11 +61,13 @@ const icons: Record<string, React.ReactNode> = {
 export function StackIcons({ items }: { items: StackItem[] }) {
   return (
     <ul className="flex flex-wrap gap-3 sm:gap-4">
-      {items.map((item) => (
+      {items.map((item) => {
+        const isMono = item.color === "#000000";
+        return (
         <li key={item.name} className="group relative">
           <span
             className="flex h-12 w-12 items-center justify-center rounded-md border border-border bg-card transition-colors hover:border-foreground/25 sm:h-14 sm:w-14"
-            style={{ color: item.color }}
+            style={{ color: isMono ? "var(--foreground)" : item.color }}
             tabIndex={0}
             aria-label={item.name}
           >
@@ -77,7 +79,8 @@ export function StackIcons({ items }: { items: StackItem[] }) {
             {item.name}
           </span>
         </li>
-      ))}
+      );
+      })}
     </ul>
   );
 }
