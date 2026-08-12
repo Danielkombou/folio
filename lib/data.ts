@@ -8,7 +8,6 @@ export const site = {
   initials: "KD",
   email: "danielkombou7@gmail.com",
   github: "https://github.com/Danielkombou",
-  avatar: "/avatar.webp",
   socials: [
     { label: "GitHub", href: "https://github.com/Danielkombou" },
     { label: "LinkedIn", href: "https://linkedin.com/in/kombou-daniel-b394b92a5" },

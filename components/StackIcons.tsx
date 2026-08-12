@@ -61,7 +61,7 @@ const icons: Record<string, React.ReactNode> = {
 /** Diagonal “constellation” stack — no boxes, social-link energy. */
 export function StackIcons({ items }: { items: StackItem[] }) {
   return (
-    <ul className="stack-orbit relative mx-auto flex max-w-md flex-wrap justify-center gap-x-5 gap-y-8 py-4 sm:max-w-lg sm:gap-x-7">
+    <ul className="relative flex w-full flex-wrap justify-center gap-x-6 gap-y-8 py-2 sm:gap-x-8 sm:gap-y-10">
       {items.map((item, i) => {
         const isMono = item.color === "#000000";
         const tilt = ((i % 5) - 2) * 6;
