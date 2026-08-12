@@ -1,3 +1,4 @@
+import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -104,19 +105,7 @@ export default function Home() {
           <p className="mb-4 text-xs leading-relaxed text-muted">
             Get new writings and occasional project updates in your inbox.
           </p>
-          <form className="relative" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="w-full rounded-md border border-border bg-card px-4 py-3 pr-28 text-xs outline-none transition-colors focus:border-foreground/30"
-            />
-            <button
-              type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-foreground/80 px-4 py-2 text-xs text-background transition-colors hover:bg-foreground"
-            >
-              Subscribe
-            </button>
-          </form>
+          <NewsletterForm />
         </section>
       </Reveal>
 
