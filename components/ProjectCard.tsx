@@ -15,14 +15,14 @@ export function ProjectCard({
   priority?: boolean;
 }) {
   return (
-    <Reveal delay={delay}>
+    <Reveal delay={delay} className="h-full">
       <Link
         href={project.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group block overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-foreground/25"
+        className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-foreground/25"
       >
-        <div className="relative aspect-[16/10] overflow-hidden bg-muted/20">
+        <div className="relative aspect-[16/10] shrink-0 overflow-hidden bg-muted/20">
           <Image
             src={project.image}
             alt={`${project.title} preview`}
@@ -32,7 +32,7 @@ export function ProjectCard({
             className="object-cover object-top grayscale transition duration-500 group-hover:scale-[1.02] group-hover:grayscale-0"
           />
         </div>
-        <div className="border-t border-border p-4 sm:p-5">
+        <div className="flex min-h-[7.5rem] flex-1 flex-col border-t border-border p-4 sm:min-h-[8rem] sm:p-5">
           <p className="mb-1.5 text-base font-semibold">{project.title}</p>
           <p className="text-sm leading-relaxed text-muted">{project.description}</p>
         </div>

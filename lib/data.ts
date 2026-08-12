@@ -8,6 +8,7 @@ export const site = {
   initials: "KD",
   email: "danielkombou7@gmail.com",
   github: "https://github.com/Danielkombou",
+  avatar: "/avatar.webp",
   socials: [
     { label: "GitHub", href: "https://github.com/Danielkombou" },
     { label: "LinkedIn", href: "https://linkedin.com/in/kombou-daniel-b394b92a5" },
@@ -50,18 +51,20 @@ export const projects = {
       tags: ["React", "PDF", "Node.js"],
     },
     {
-      title: "Chat App",
-      description: "Realtime messaging UI with rooms, presence, and clean conversation flows.",
-      href: "https://github.com/Danielkombou/chat-app",
-      image: "/projects/chat-app.svg",
-      tags: ["React", "Socket.io", "Node.js"],
+      title: "JARVIS",
+      description:
+        "Terminal cybersecurity assistant for network scanning, vulnerability assessment, and ethical security testing on Ubuntu.",
+      href: "https://github.com/Danielkombou/jarvis",
+      image: "/projects/jarvis.webp",
+      tags: ["Python", "Nmap", "Security"],
     },
     {
-      title: "Web Music Player",
-      description: "Browser music player focused on smooth playback and a clear listening UX.",
-      href: "https://github.com/Danielkombou",
-      image: "/projects/music-player.svg",
-      tags: ["HTML", "CSS", "JavaScript"],
+      title: "EcoCleaners",
+      description:
+        "B2B waste exchange platform that turns scrap into revenue by connecting traders with specialized recyclers.",
+      href: "https://github.com/NebaFavour/v0-waste-exchange-platform",
+      image: "/projects/ecocleaners.webp",
+      tags: ["Next.js", "Marketplace", "GreenTech"],
     },
     {
       title: "Dino Run",
@@ -103,6 +106,21 @@ export const writings = {
   description:
     "Notes on engineering, mentoring, and the small moments where things finally click.",
   items: [
+    {
+      slug: "cybersecurity-passion-to-jarvis",
+      title: "From curiosity to JARVIS",
+      date: "12/08/26",
+      readTime: "6 min read",
+      excerpt:
+        "How a growing passion for cybersecurity turned into building JARVIS — a terminal assistant for ethical security work.",
+      content: [
+        "Cybersecurity did not start for me as a job title. It started as curiosity — the itch to understand how systems fail, and how to defend them before someone else finds the crack.",
+        "I spent nights reading about networks, permissions, and the quiet discipline behind ethical testing. The more I learned, the clearer it became: tools matter, but judgment matters more. Authorized scope, clear logs, and respect for systems are not optional.",
+        "That passion became JARVIS — a terminal cybersecurity assistant I built in Python on Ubuntu. Inspired by the idea of a calm operator beside you, JARVIS grew into network scanning, vulnerability assessment, reporting, and a modular core I could keep extending.",
+        "Building it forced me to connect theory with practice: Nmap for discovery, careful privilege handling, structured reports, and an interface that stays readable under pressure. Every module was a lesson in responsibility as much as capability.",
+        "JARVIS is still evolving, and so am I. Cybersecurity remains one of the paths where learning never really ends — and that is exactly why I keep building.",
+      ],
+    },
     {
       slug: "building-attendx-from-scratch",
       title: "Building AttendX from scratch",
