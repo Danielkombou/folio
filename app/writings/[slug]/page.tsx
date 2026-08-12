@@ -52,8 +52,8 @@ export default async function WritingPage({
 
       <Reveal delay={0.08}>
         <article className="space-y-5 text-base leading-relaxed text-foreground/90 sm:text-lg">
-          {writing.content.map((paragraph) => (
-            <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+          {writing.content.map((paragraph, index) => (
+            <p key={`${writing.slug}-${index}`}>{paragraph}</p>
           ))}
         </article>
       </Reveal>
