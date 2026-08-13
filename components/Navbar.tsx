@@ -157,7 +157,7 @@ export function Navbar() {
         onMouseLeave={handleNavLeave}
         onFocusCapture={handleNavEnter}
         onBlurCapture={handleNavBlur}
-        className={`nav-shell flex items-center overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
+        className={`nav-shell relative flex items-center overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
           collapsed
             ? "nav-shell--glow justify-center px-2.5 py-2"
             : "justify-between gap-1 px-3 py-2.5 sm:gap-2 sm:px-4"
@@ -166,7 +166,11 @@ export function Navbar() {
         <Link
           href="/"
           aria-label="Daniel Kombou home"
-          className="nav-hotspot relative z-10 shrink-0 overflow-visible rounded-md px-1.5 py-1 text-foreground"
+          className={`nav-hotspot z-10 shrink-0 overflow-visible rounded-md px-1.5 py-1 text-foreground ${
+            collapsed
+              ? "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              : "relative"
+          }`}
         >
           <KDMark />
           <span className="sr-only">KD</span>
@@ -179,7 +183,7 @@ export function Navbar() {
             opacity: expanded ? 1 : 0,
           }}
           transition={linksTransition}
-          className="min-w-0 overflow-hidden"
+          className={`min-w-0 overflow-hidden ${collapsed ? "w-0 shrink" : ""}`}
           style={{ pointerEvents: expanded ? "auto" : "none" }}
           aria-hidden={!expanded}
         >
