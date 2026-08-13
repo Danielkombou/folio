@@ -1,25 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const links = [
   { href: "/projects", label: "Projects" },
   { href: "/writings", label: "Writings" },
 ];
 
-/** Pixel-block KD mark inspired by chunky 8-bit monograms. */
-function KDMark({ size = 28 }: { size?: number }) {
-  const h = size;
-  const w = Math.round(size * 1.7);
+/** Pixel-block KD mark — fixed viewBox, never stretched. */
+function KDMark() {
   return (
     <svg
-      width={w}
-      height={h}
+      width="48"
+      height="28"
       viewBox="0 0 34 20"
       aria-hidden
-      className="block"
+      className="block shrink-0"
+      style={{ width: 48, height: 28 }}
     >
       <rect x="0" y="0" width="3" height="20" fill="currentColor" />
       <rect x="3" y="8" width="4" height="4" fill="currentColor" />
@@ -37,81 +36,109 @@ function KDMark({ size = 28 }: { size?: number }) {
   );
 }
 
+const SCROLL_THRESHOLD = 32;
+const SCROLL_DELTA = 10;
+
 export function Navbar() {
   const [pastThreshold, setPastThreshold] = useState(false);
   const [scrollingUp, setScrollingUp] = useState(false);
   const [logoHover, setLogoHover] = useState(false);
   const lastY = useRef(0);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduce = useReducedMotion();
+
+  const onScroll = useCallback(() => {
+    const y = window.scrollY;
+    const delta = y - lastY.current;
+
+    setPastThreshold(y > SCROLL_THRESHOLD);
+
+    if (y <= SCROLL_THRESHOLD) {
+      setScrollingUp(false);
+    } else if (delta < -SCROLL_DELTA) {
+      setScrollingUp(true);
+    } else if (delta > SCROLL_DELTA) {
+      setScrollingUp(false);
+    }
+
+    lastY.current = y;
+  }, []);
 
   useEffect(() => {
     lastY.current = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      const goingUp = y < lastY.current;
-      lastY.current = y;
-      setPastThreshold(y > 24);
-      setScrollingUp(y > 24 && goingUp);
-    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, [onScroll]);
+
+  const handleLogoEnter = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    setLogoHover(true);
+  };
+
+  const handleLogoLeave = () => {
+    hoverTimer.current = setTimeout(() => setLogoHover(false), 120);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    };
   }, []);
 
   const expanded = !pastThreshold || scrollingUp || logoHover;
   const collapsed = !expanded;
+  const transition = reduce
+    ? { duration: 0 }
+    : { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const };
 
   return (
     <header className="sticky top-0 z-50 flex justify-center px-3 pt-3 sm:px-6">
       <motion.nav
-        layout
-        transition={{ duration: reduce ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] }}
-        className={`nav-shell flex items-center rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
-          collapsed
-            ? "nav-shell--glow justify-center px-3.5 py-2.5"
-            : "w-full max-w-2xl justify-between gap-4 px-4 py-3 sm:px-5"
+        initial={false}
+        animate={{
+          width: collapsed ? "auto" : "100%",
+          maxWidth: collapsed ? 72 : 672,
+        }}
+        transition={transition}
+        className={`nav-shell flex items-center overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
+          collapsed ? "nav-shell--glow justify-center px-2.5 py-2" : "justify-between gap-2 px-3 py-2.5 sm:px-4"
         }`}
       >
         <Link
           href="/"
           aria-label="Daniel Kombou home"
-          className="nav-hotspot relative z-10 rounded-md px-2 py-1.5 text-foreground"
-          onMouseEnter={() => setLogoHover(true)}
-          onMouseLeave={() => setLogoHover(false)}
-          onFocus={() => setLogoHover(true)}
-          onBlur={() => setLogoHover(false)}
+          className="nav-hotspot relative z-10 shrink-0 rounded-md px-1.5 py-1 text-foreground"
+          onMouseEnter={handleLogoEnter}
+          onMouseLeave={handleLogoLeave}
+          onFocus={handleLogoEnter}
+          onBlur={handleLogoLeave}
         >
-          <KDMark size={collapsed ? 20 : 26} />
+          <KDMark />
           <span className="sr-only">KD</span>
         </Link>
 
-        <AnimatePresence initial={false} mode="popLayout">
-          {expanded && (
-            <motion.ul
-              key="nav-links"
-              initial={reduce ? false : { opacity: 0, x: 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={reduce ? undefined : { opacity: 0, x: 36, filter: "blur(4px)" }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-1 overflow-hidden text-sm text-muted sm:gap-2 sm:text-base"
-            >
-              {links.map((l, i) => (
-                <motion.li
-                  key={l.href}
-                  className="shrink-0"
-                  initial={reduce ? false : { opacity: 0, x: 18 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={reduce ? undefined : { opacity: 0, x: 14 }}
-                  transition={{ duration: 0.28, delay: reduce ? 0 : i * 0.05 }}
-                >
-                  <Link href={l.href} className="nav-hotspot block rounded-md px-3 py-1.5">
-                    {l.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </motion.ul>
-          )}
-        </AnimatePresence>
+        <motion.div
+          initial={false}
+          animate={{
+            width: expanded ? "auto" : 0,
+            opacity: expanded ? 1 : 0,
+            marginLeft: expanded ? 0 : -8,
+          }}
+          transition={transition}
+          className="min-w-0 overflow-hidden"
+          aria-hidden={!expanded}
+        >
+          <ul className="flex items-center gap-0.5 whitespace-nowrap text-sm text-muted sm:gap-1 sm:text-base">
+            {links.map((l) => (
+              <li key={l.href} className="shrink-0">
+                <Link href={l.href} className="nav-hotspot block rounded-md px-2.5 py-1.5 sm:px-3">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
       </motion.nav>
     </header>
   );

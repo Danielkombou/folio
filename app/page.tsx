@@ -94,14 +94,17 @@ export default function Home() {
               <li key={w.slug}>
                 <Link
                   href={`/writings/${w.slug}`}
-                  className="flex items-center text-base transition-colors hover:text-foreground/70"
+                  className="group flex flex-col gap-1 transition-colors hover:text-foreground/70 sm:flex-row sm:items-center sm:gap-0"
                 >
-                  <span className="shrink-0">{w.title}</span>
-                  <span className="dotted-leader" />
-                  <span className="shrink-0 text-right text-sm leading-tight text-muted">
-                    {w.date}
-                    <br />
-                    {w.readTime}
+                  <span className="min-w-0 text-base leading-snug sm:shrink-0">{w.title}</span>
+                  <span className="dotted-leader hidden sm:block" />
+                  <span className="shrink-0 text-sm text-muted sm:text-right sm:leading-tight">
+                    <span className="sm:hidden">{w.date} · {w.readTime}</span>
+                    <span className="hidden sm:inline">
+                      {w.date}
+                      <br />
+                      {w.readTime}
+                    </span>
                   </span>
                 </Link>
               </li>
