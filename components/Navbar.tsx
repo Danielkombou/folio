@@ -16,17 +16,17 @@ const links = [
   { href: "/writings", label: "Writings" },
 ];
 
-const COLLAPSED_WIDTH = 72;
+const COLLAPSED_WIDTH = 80;
 const EXPANDED_MAX_WIDTH = 672;
 const SCROLL_THRESHOLD = 32;
 const SCROLL_DELTA = 8;
 
-/** Pixel-block KD mark; script “l” appears only when expanded. */
-function KDMark({ showScript }: { showScript: boolean }) {
+/** Pixel-block KD mark with script “l” after D. */
+function KDMark() {
   return (
     <span
       className="relative inline-block shrink-0 text-foreground"
-      style={{ width: showScript ? 58 : 48, height: 28 }}
+      style={{ width: 58, height: 28 }}
     >
       <svg
         width="48"
@@ -49,10 +49,8 @@ function KDMark({ showScript }: { showScript: boolean }) {
         <rect x="31" y="6" width="3" height="8" fill="currentColor" />
       </svg>
       <span
-        className={`${caveat.className} absolute bottom-0 left-[34px] text-[22px] leading-none text-foreground transition-opacity duration-200 ${
-          showScript ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        aria-hidden={!showScript}
+        className={`${caveat.className} absolute bottom-0 left-[34px] text-[22px] leading-none text-foreground`}
+        aria-hidden
       >
         l
       </span>
@@ -170,7 +168,7 @@ export function Navbar() {
           aria-label="Daniel Kombou home"
           className="nav-hotspot relative z-10 shrink-0 overflow-visible rounded-md px-1.5 py-1 text-foreground"
         >
-          <KDMark showScript={expanded} />
+          <KDMark />
           <span className="sr-only">KD</span>
         </Link>
 
