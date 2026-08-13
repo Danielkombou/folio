@@ -2,24 +2,24 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const links = [
   { href: "/projects", label: "Projects" },
   { href: "/writings", label: "Writings" },
 ];
 
-const COLLAPSED_WIDTH = 80;
+const COLLAPSED_WIDTH = 72;
 const EXPANDED_MAX_WIDTH = 672;
 const SCROLL_THRESHOLD = 32;
 const SCROLL_DELTA = 8;
 
-/** Pixel-block KD mark with script “l” after D — fixed dimensions, never stretched. */
-function KDMark() {
+/** Pixel-block KD mark; script “l” appears only when expanded. */
+function KDMark({ showScript }: { showScript: boolean }) {
   return (
     <span
       className="inline-flex shrink-0 items-end"
-      style={{ width: 56, height: 28, flexShrink: 0 }}
+      style={{ width: showScript ? 56 : 48, height: 28, flexShrink: 0 }}
     >
       <svg
         width="48"
@@ -42,13 +42,20 @@ function KDMark() {
         <rect x="28" y="14" width="3" height="3" fill="currentColor" />
         <rect x="31" y="6" width="3" height="8" fill="currentColor" />
       </svg>
-      <span
-        className="relative -ml-2 mb-0.5 text-[16px] leading-none"
+      <motion.span
+        initial={false}
+        animate={{
+          opacity: showScript ? 1 : 0,
+          width: showScript ? "auto" : 0,
+          marginLeft: showScript ? -8 : 0,
+        }}
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        className="overflow-hidden whitespace-nowrap text-[16px] leading-none"
         style={{ fontFamily: "var(--font-caveat)" }}
         aria-hidden
       >
         l
-      </span>
+      </motion.span>
     </span>
   );
 }
@@ -57,7 +64,8 @@ export function Navbar() {
   const [pastThreshold, setPastThreshold] = useState(false);
   const [scrollingUp, setScrollingUp] = useState(false);
   const [navHover, setNavHover] = useState(false);
-  const [viewportWidth, setViewportWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(EXPANDED_MAX_WIDTH);
+  const [layoutReady, setLayoutReady] = useState(false);
   const lastY = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduce = useReducedMotion();
@@ -84,9 +92,13 @@ export function Navbar() {
     lastY.current = y;
   }, []);
 
+  useLayoutEffect(() => {
+    setViewportWidth(window.innerWidth);
+    setLayoutReady(true);
+  }, []);
+
   useEffect(() => {
     const syncViewport = () => setViewportWidth(window.innerWidth);
-    syncViewport();
     lastY.current = window.scrollY;
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -123,18 +135,17 @@ export function Navbar() {
 
   const expanded = !pastThreshold || scrollingUp || navHover;
   const collapsed = !expanded;
-  const expandedWidth =
-    viewportWidth > 0
-      ? Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 24)
-      : EXPANDED_MAX_WIDTH;
+  const expandedWidth = Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 24);
 
-  const shellTransition = reduce
-    ? { duration: 0 }
-    : { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const };
+  const shellTransition =
+    !layoutReady || reduce
+      ? { duration: 0 }
+      : { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const };
 
-  const linksTransition = reduce
-    ? { duration: 0 }
-    : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const, delay: collapsed ? 0 : 0.04 };
+  const linksTransition =
+    !layoutReady || reduce
+      ? { duration: 0 }
+      : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const, delay: collapsed ? 0 : 0.04 };
 
   return (
     <header className="sticky top-0 z-50 flex justify-center px-3 pt-3 sm:px-6">
@@ -159,7 +170,7 @@ export function Navbar() {
           aria-label="Daniel Kombou home"
           className="nav-hotspot relative z-10 shrink-0 rounded-md px-1.5 py-1 text-foreground"
         >
-          <KDMark />
+          <KDMark showScript={expanded} />
           <span className="sr-only">KD</span>
         </Link>
 

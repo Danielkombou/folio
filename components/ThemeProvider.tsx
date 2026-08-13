@@ -33,7 +33,9 @@ function resolveTheme(preference: ThemePreference): Theme {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>("system");
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(() =>
+    typeof window !== "undefined" ? getSystemTheme() : "light",
+  );
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
