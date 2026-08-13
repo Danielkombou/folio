@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { Caveat } from "next/font/google";
 import { motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: "500",
+  display: "swap",
+});
 
 const links = [
   { href: "/projects", label: "Projects" },
@@ -17,14 +24,16 @@ const SCROLL_DELTA = 8;
 /** Pixel-block KD mark; script “l” appears only when expanded. */
 function KDMark({ showScript }: { showScript: boolean }) {
   return (
-    <span className="inline-flex shrink-0 items-end text-foreground" style={{ height: 28 }}>
+    <span
+      className="relative inline-block shrink-0 text-foreground"
+      style={{ width: showScript ? 58 : 48, height: 28 }}
+    >
       <svg
         width="48"
         height="28"
         viewBox="0 0 34 20"
         aria-hidden
-        className="block shrink-0"
-        style={{ width: 48, height: 28, flexShrink: 0 }}
+        className="block"
       >
         <rect x="0" y="0" width="3" height="20" fill="currentColor" />
         <rect x="3" y="8" width="4" height="4" fill="currentColor" />
@@ -39,19 +48,14 @@ function KDMark({ showScript }: { showScript: boolean }) {
         <rect x="28" y="14" width="3" height="3" fill="currentColor" />
         <rect x="31" y="6" width="3" height="8" fill="currentColor" />
       </svg>
-      <motion.span
-        initial={false}
-        animate={{
-          opacity: showScript ? 1 : 0,
-          maxWidth: showScript ? 18 : 0,
-          marginLeft: showScript ? -6 : 0,
-        }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="kd-script-l inline-block overflow-hidden whitespace-nowrap pb-0.5 text-[18px] leading-none text-foreground"
+      <span
+        className={`${caveat.className} absolute bottom-0 left-[34px] text-[22px] leading-none text-foreground transition-opacity duration-200 ${
+          showScript ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
         aria-hidden={!showScript}
       >
         l
-      </motion.span>
+      </span>
     </span>
   );
 }
@@ -81,7 +85,7 @@ export function Navbar() {
       setScrollingUp(false);
     } else if (delta < -SCROLL_DELTA) {
       setScrollingUp(true);
-    } else if (delta > SCROLL_DELTA && !atBottom) {
+    } else if (delta > SCROLL_DELTA || atBottom) {
       setScrollingUp(false);
     }
 
@@ -164,7 +168,7 @@ export function Navbar() {
         <Link
           href="/"
           aria-label="Daniel Kombou home"
-          className="nav-hotspot relative z-10 shrink-0 rounded-md px-1.5 py-1 text-foreground"
+          className="nav-hotspot relative z-10 shrink-0 overflow-visible rounded-md px-1.5 py-1 text-foreground"
         >
           <KDMark showScript={expanded} />
           <span className="sr-only">KD</span>
