@@ -16,7 +16,7 @@ const links = [
   { href: "/writings", label: "Writings" },
 ];
 
-const COLLAPSED_WIDTH = 80;
+const COLLAPSED_WIDTH = 76;
 const EXPANDED_MAX_WIDTH = 672;
 const SCROLL_THRESHOLD = 32;
 const SCROLL_DELTA = 8;
@@ -24,16 +24,13 @@ const SCROLL_DELTA = 8;
 /** Pixel-block KD mark with script “l” after D. */
 function KDMark() {
   return (
-    <span
-      className="relative inline-block shrink-0 text-foreground"
-      style={{ width: 58, height: 28 }}
-    >
+    <span className="relative mx-auto block h-7 w-[50px] shrink-0 text-foreground">
       <svg
         width="48"
         height="28"
         viewBox="0 0 34 20"
         aria-hidden
-        className="block"
+        className="absolute left-0 top-0 block"
       >
         <rect x="0" y="0" width="3" height="20" fill="currentColor" />
         <rect x="3" y="8" width="4" height="4" fill="currentColor" />
@@ -49,7 +46,7 @@ function KDMark() {
         <rect x="31" y="6" width="3" height="8" fill="currentColor" />
       </svg>
       <span
-        className={`${caveat.className} absolute bottom-0 left-[34px] text-[22px] leading-none text-foreground`}
+        className={`${caveat.className} absolute bottom-0 left-[33px] text-[22px] leading-none text-foreground`}
         aria-hidden
       >
         l
@@ -157,19 +154,17 @@ export function Navbar() {
         onMouseLeave={handleNavLeave}
         onFocusCapture={handleNavEnter}
         onBlurCapture={handleNavBlur}
-        className={`nav-shell relative flex items-center overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
+        className={`nav-shell relative overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
           collapsed
-            ? "nav-shell--glow justify-center px-2.5 py-2"
-            : "justify-between gap-1 px-3 py-2.5 sm:gap-2 sm:px-4"
+            ? "nav-shell--glow grid place-items-center py-2"
+            : "flex items-center justify-between gap-1 px-3 py-2.5 sm:gap-2 sm:px-4"
         }`}
       >
         <Link
           href="/"
           aria-label="Daniel Kombou home"
-          className={`nav-hotspot z-10 shrink-0 overflow-visible rounded-md px-1.5 py-1 text-foreground ${
-            collapsed
-              ? "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-              : "relative"
+          className={`nav-hotspot z-10 shrink-0 overflow-visible rounded-md text-foreground ${
+            collapsed ? "relative col-start-1 row-start-1 px-0 py-1" : "relative px-1.5 py-1"
           }`}
         >
           <KDMark />
@@ -183,7 +178,7 @@ export function Navbar() {
             opacity: expanded ? 1 : 0,
           }}
           transition={linksTransition}
-          className={`min-w-0 overflow-hidden ${collapsed ? "w-0 shrink" : ""}`}
+          className={`min-w-0 overflow-hidden ${collapsed ? "hidden" : "flex flex-1 justify-end"}`}
           style={{ pointerEvents: expanded ? "auto" : "none" }}
           aria-hidden={!expanded}
         >
