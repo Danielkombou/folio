@@ -16,10 +16,6 @@ export const site = {
 };
 
 export const hero = {
-  intro:
-    "I'm a software engineer building technology that creates opportunities and solves real-world problems. Currently building AttendX.",
-  previous:
-    "Frontend Developer & Program Facilitator at Tic Foundation, where I mentor interns and ship tools for education across Africa.",
   cta: "Let's talk",
 };
 

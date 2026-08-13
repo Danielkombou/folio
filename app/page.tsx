@@ -18,10 +18,29 @@ export default function Home() {
             I&apos;m Daniel.
           </h1>
           <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">
-            {hero.intro}
+            I&apos;m a software engineer building technology that creates opportunities and
+            solves real-world problems. Currently building{" "}
+            <a
+              href="https://attend-tichub.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline underline-offset-2 transition-colors hover:text-foreground/60"
+            >
+              AttendX
+            </a>
+            .
           </p>
           <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">
-            {hero.previous}
+            Frontend Developer & Program Facilitator at{" "}
+            <a
+              href="https://www.linkedin.com/company/tic-foundation/posts/?feedView=all"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold underline underline-offset-2 transition-colors hover:text-foreground/60"
+            >
+              TiC Foundation
+            </a>
+            , where I mentor interns and ship tools for education across Africa.
           </p>
           <p className="text-base leading-relaxed text-foreground/85 sm:text-lg">
             If you value polish, speed, and attention to detail, we&apos;ll get along great.{" "}
