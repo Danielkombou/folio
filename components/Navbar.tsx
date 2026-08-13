@@ -9,42 +9,54 @@ const links = [
   { href: "/writings", label: "Writings" },
 ];
 
-const COLLAPSED_WIDTH = 72;
+const COLLAPSED_WIDTH = 80;
 const EXPANDED_MAX_WIDTH = 672;
 const SCROLL_THRESHOLD = 32;
 const SCROLL_DELTA = 8;
 
-/** Pixel-block KD mark — fixed dimensions, never stretched. */
+/** Pixel-block KD mark with script “l” after D — fixed dimensions, never stretched. */
 function KDMark() {
   return (
-    <svg
-      width="48"
-      height="28"
-      viewBox="0 0 34 20"
-      aria-hidden
-      className="block shrink-0"
-      style={{ width: 48, height: 28, flexShrink: 0 }}
+    <span
+      className="inline-flex shrink-0 items-end"
+      style={{ width: 56, height: 28, flexShrink: 0 }}
     >
-      <rect x="0" y="0" width="3" height="20" fill="currentColor" />
-      <rect x="3" y="8" width="4" height="4" fill="currentColor" />
-      <rect x="7" y="5" width="3" height="3" fill="currentColor" />
-      <rect x="7" y="12" width="3" height="3" fill="currentColor" />
-      <rect x="10" y="0" width="3" height="5" fill="currentColor" />
-      <rect x="10" y="15" width="3" height="5" fill="currentColor" />
-      <rect x="18" y="0" width="3" height="20" fill="currentColor" />
-      <rect x="21" y="0" width="8" height="3" fill="currentColor" />
-      <rect x="21" y="17" width="8" height="3" fill="currentColor" />
-      <rect x="28" y="3" width="3" height="3" fill="currentColor" />
-      <rect x="28" y="14" width="3" height="3" fill="currentColor" />
-      <rect x="31" y="6" width="3" height="8" fill="currentColor" />
-    </svg>
+      <svg
+        width="48"
+        height="28"
+        viewBox="0 0 34 20"
+        aria-hidden
+        className="block shrink-0"
+        style={{ width: 48, height: 28, flexShrink: 0 }}
+      >
+        <rect x="0" y="0" width="3" height="20" fill="currentColor" />
+        <rect x="3" y="8" width="4" height="4" fill="currentColor" />
+        <rect x="7" y="5" width="3" height="3" fill="currentColor" />
+        <rect x="7" y="12" width="3" height="3" fill="currentColor" />
+        <rect x="10" y="0" width="3" height="5" fill="currentColor" />
+        <rect x="10" y="15" width="3" height="5" fill="currentColor" />
+        <rect x="18" y="0" width="3" height="20" fill="currentColor" />
+        <rect x="21" y="0" width="8" height="3" fill="currentColor" />
+        <rect x="21" y="17" width="8" height="3" fill="currentColor" />
+        <rect x="28" y="3" width="3" height="3" fill="currentColor" />
+        <rect x="28" y="14" width="3" height="3" fill="currentColor" />
+        <rect x="31" y="6" width="3" height="8" fill="currentColor" />
+      </svg>
+      <span
+        className="relative -ml-2 mb-0.5 text-[16px] leading-none"
+        style={{ fontFamily: "var(--font-caveat)" }}
+        aria-hidden
+      >
+        l
+      </span>
+    </span>
   );
 }
 
 export function Navbar() {
   const [pastThreshold, setPastThreshold] = useState(false);
   const [scrollingUp, setScrollingUp] = useState(false);
-  const [logoHover, setLogoHover] = useState(false);
+  const [navHover, setNavHover] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(0);
   const lastY = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -85,13 +97,22 @@ export function Navbar() {
     };
   }, [onScroll]);
 
-  const handleLogoEnter = () => {
+  const handleNavEnter = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    setLogoHover(true);
+    hoverTimer.current = null;
+    setNavHover(true);
   };
 
-  const handleLogoLeave = () => {
-    hoverTimer.current = setTimeout(() => setLogoHover(false), 160);
+  const handleNavLeave = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setNavHover(false), 140);
+  };
+
+  const handleNavBlur = (e: React.FocusEvent<HTMLElement>) => {
+    const next = e.relatedTarget as Node | null;
+    if (!next || !e.currentTarget.contains(next)) {
+      handleNavLeave();
+    }
   };
 
   useEffect(() => {
@@ -100,7 +121,7 @@ export function Navbar() {
     };
   }, []);
 
-  const expanded = !pastThreshold || scrollingUp || logoHover;
+  const expanded = !pastThreshold || scrollingUp || navHover;
   const collapsed = !expanded;
   const expandedWidth =
     viewportWidth > 0
@@ -123,6 +144,10 @@ export function Navbar() {
           width: collapsed ? COLLAPSED_WIDTH : expandedWidth,
         }}
         transition={shellTransition}
+        onMouseEnter={handleNavEnter}
+        onMouseLeave={handleNavLeave}
+        onFocusCapture={handleNavEnter}
+        onBlurCapture={handleNavBlur}
         className={`nav-shell flex items-center overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
           collapsed
             ? "nav-shell--glow justify-center px-2.5 py-2"
@@ -133,10 +158,6 @@ export function Navbar() {
           href="/"
           aria-label="Daniel Kombou home"
           className="nav-hotspot relative z-10 shrink-0 rounded-md px-1.5 py-1 text-foreground"
-          onMouseEnter={handleLogoEnter}
-          onMouseLeave={handleLogoLeave}
-          onFocus={handleLogoEnter}
-          onBlur={handleLogoLeave}
         >
           <KDMark />
           <span className="sr-only">KD</span>

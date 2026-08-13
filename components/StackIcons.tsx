@@ -90,9 +90,11 @@ const icons: Record<string, React.ReactNode> = {
     </svg>
   ),
   BetterAuth: (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-      <rect x="5" y="11" width="14" height="10" rx="2" />
-      <path d="M8 11V8a4 4 0 018 0v3" />
+    <svg viewBox="0 0 400 300" width="20" height="15" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        d="M0 150v150h100V200h100v100h200V0H200v100H100V0H0zm300 0v50H200V100h100z"
+      />
     </svg>
   ),
   Flutter: (
