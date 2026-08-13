@@ -17,10 +17,7 @@ const SCROLL_DELTA = 8;
 /** Pixel-block KD mark; script “l” appears only when expanded. */
 function KDMark({ showScript }: { showScript: boolean }) {
   return (
-    <span
-      className="inline-flex shrink-0 items-end"
-      style={{ width: showScript ? 56 : 48, height: 28, flexShrink: 0 }}
-    >
+    <span className="inline-flex shrink-0 items-end text-foreground" style={{ height: 28 }}>
       <svg
         width="48"
         height="28"
@@ -46,13 +43,12 @@ function KDMark({ showScript }: { showScript: boolean }) {
         initial={false}
         animate={{
           opacity: showScript ? 1 : 0,
-          width: showScript ? "auto" : 0,
-          marginLeft: showScript ? -8 : 0,
+          maxWidth: showScript ? 18 : 0,
+          marginLeft: showScript ? -6 : 0,
         }}
         transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-        className="overflow-hidden whitespace-nowrap text-[16px] leading-none"
-        style={{ fontFamily: "var(--font-caveat)" }}
-        aria-hidden
+        className="kd-script-l inline-block overflow-hidden whitespace-nowrap pb-0.5 text-[18px] leading-none text-foreground"
+        aria-hidden={!showScript}
       >
         l
       </motion.span>
