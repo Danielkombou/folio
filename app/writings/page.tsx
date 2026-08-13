@@ -32,11 +32,11 @@ export default function WritingsPage() {
                 href={`/writings/${w.slug}`}
                 className="group block rounded-md border border-border bg-card p-5 transition-colors hover:border-foreground/25"
               >
-                <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 className="text-lg font-semibold group-hover:underline group-hover:underline-offset-2">
+                <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+                  <h2 className="min-w-0 text-lg font-semibold break-words group-hover:underline group-hover:underline-offset-2">
                     {w.title}
                   </h2>
-                  <span className="text-sm text-muted">
+                  <span className="shrink-0 text-sm text-muted">
                     {w.date} · {w.readTime}
                   </span>
                 </div>

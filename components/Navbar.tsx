@@ -9,7 +9,12 @@ const links = [
   { href: "/writings", label: "Writings" },
 ];
 
-/** Pixel-block KD mark — fixed viewBox, never stretched. */
+const COLLAPSED_WIDTH = 72;
+const EXPANDED_MAX_WIDTH = 672;
+const SCROLL_THRESHOLD = 32;
+const SCROLL_DELTA = 8;
+
+/** Pixel-block KD mark — fixed dimensions, never stretched. */
 function KDMark() {
   return (
     <svg
@@ -18,7 +23,7 @@ function KDMark() {
       viewBox="0 0 34 20"
       aria-hidden
       className="block shrink-0"
-      style={{ width: 48, height: 28 }}
+      style={{ width: 48, height: 28, flexShrink: 0 }}
     >
       <rect x="0" y="0" width="3" height="20" fill="currentColor" />
       <rect x="3" y="8" width="4" height="4" fill="currentColor" />
@@ -36,13 +41,11 @@ function KDMark() {
   );
 }
 
-const SCROLL_THRESHOLD = 32;
-const SCROLL_DELTA = 10;
-
 export function Navbar() {
   const [pastThreshold, setPastThreshold] = useState(false);
   const [scrollingUp, setScrollingUp] = useState(false);
   const [logoHover, setLogoHover] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const lastY = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduce = useReducedMotion();
@@ -50,6 +53,11 @@ export function Navbar() {
   const onScroll = useCallback(() => {
     const y = window.scrollY;
     const delta = y - lastY.current;
+    const maxScroll = Math.max(
+      0,
+      document.documentElement.scrollHeight - window.innerHeight,
+    );
+    const atBottom = y >= maxScroll - 4;
 
     setPastThreshold(y > SCROLL_THRESHOLD);
 
@@ -57,7 +65,7 @@ export function Navbar() {
       setScrollingUp(false);
     } else if (delta < -SCROLL_DELTA) {
       setScrollingUp(true);
-    } else if (delta > SCROLL_DELTA) {
+    } else if (delta > SCROLL_DELTA && !atBottom) {
       setScrollingUp(false);
     }
 
@@ -65,10 +73,16 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
+    const syncViewport = () => setViewportWidth(window.innerWidth);
+    syncViewport();
     lastY.current = window.scrollY;
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", syncViewport, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", syncViewport);
+    };
   }, [onScroll]);
 
   const handleLogoEnter = () => {
@@ -77,7 +91,7 @@ export function Navbar() {
   };
 
   const handleLogoLeave = () => {
-    hoverTimer.current = setTimeout(() => setLogoHover(false), 120);
+    hoverTimer.current = setTimeout(() => setLogoHover(false), 160);
   };
 
   useEffect(() => {
@@ -88,21 +102,31 @@ export function Navbar() {
 
   const expanded = !pastThreshold || scrollingUp || logoHover;
   const collapsed = !expanded;
-  const transition = reduce
+  const expandedWidth =
+    viewportWidth > 0
+      ? Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 24)
+      : EXPANDED_MAX_WIDTH;
+
+  const shellTransition = reduce
     ? { duration: 0 }
-    : { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const };
+    : { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const };
+
+  const linksTransition = reduce
+    ? { duration: 0 }
+    : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const, delay: collapsed ? 0 : 0.04 };
 
   return (
     <header className="sticky top-0 z-50 flex justify-center px-3 pt-3 sm:px-6">
       <motion.nav
         initial={false}
         animate={{
-          width: collapsed ? "auto" : "100%",
-          maxWidth: collapsed ? 72 : 672,
+          width: collapsed ? COLLAPSED_WIDTH : expandedWidth,
         }}
-        transition={transition}
+        transition={shellTransition}
         className={`nav-shell flex items-center overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
-          collapsed ? "nav-shell--glow justify-center px-2.5 py-2" : "justify-between gap-2 px-3 py-2.5 sm:px-4"
+          collapsed
+            ? "nav-shell--glow justify-center px-2.5 py-2"
+            : "justify-between gap-1 px-3 py-2.5 sm:gap-2 sm:px-4"
         }`}
       >
         <Link
@@ -121,18 +145,18 @@ export function Navbar() {
         <motion.div
           initial={false}
           animate={{
-            width: expanded ? "auto" : 0,
+            maxWidth: expanded ? 220 : 0,
             opacity: expanded ? 1 : 0,
-            marginLeft: expanded ? 0 : -8,
           }}
-          transition={transition}
+          transition={linksTransition}
           className="min-w-0 overflow-hidden"
+          style={{ pointerEvents: expanded ? "auto" : "none" }}
           aria-hidden={!expanded}
         >
-          <ul className="flex items-center gap-0.5 whitespace-nowrap text-sm text-muted sm:gap-1 sm:text-base">
+          <ul className="flex items-center justify-end gap-0.5 whitespace-nowrap text-sm text-muted sm:gap-1 sm:text-base">
             {links.map((l) => (
               <li key={l.href} className="shrink-0">
-                <Link href={l.href} className="nav-hotspot block rounded-md px-2.5 py-1.5 sm:px-3">
+                <Link href={l.href} className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3">
                   {l.label}
                 </Link>
               </li>

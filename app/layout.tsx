@@ -14,13 +14,6 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Daniel Kombou",
   description: "Software Engineer · Full-Stack · AI & EdTech Builder",
-  icons: {
-    icon: [
-      { url: "/icon.png", type: "image/png", sizes: "32x32" },
-      { url: "/favicon.png", type: "image/png", sizes: "32x32" },
-    ],
-    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
-  },
 };
 
 const themeInitScript = `
