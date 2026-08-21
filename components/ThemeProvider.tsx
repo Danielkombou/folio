@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 type Theme = "light" | "dark";
@@ -27,43 +28,59 @@ function getSystemTheme(): Theme {
     : "light";
 }
 
+function readStoredPreference(): ThemePreference {
+  try {
+    const stored = localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      return stored;
+    }
+  } catch {
+    /* ignore */
+  }
+  return "system";
+}
+
 function resolveTheme(preference: ThemePreference): Theme {
   return preference === "system" ? getSystemTheme() : preference;
 }
 
+function subscribeSystemTheme(onStoreChange: () => void) {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getSnapshotTheme(preference: ThemePreference): Theme {
+  return resolveTheme(preference);
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>("system");
-  const [theme, setTheme] = useState<Theme>("light");
-  const [ready, setReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme") as ThemePreference | null;
-    const next = stored === "light" || stored === "dark" || stored === "system"
-      ? stored
-      : "system";
-    setPreferenceState(next);
-    setTheme(resolveTheme(next));
-    setReady(true);
+    setPreferenceState(readStoredPreference());
+    setHydrated(true);
   }, []);
 
-  useEffect(() => {
-    if (!ready) return;
-    setTheme(resolveTheme(preference));
-  }, [preference, ready]);
+  const systemTheme = useSyncExternalStore(
+    subscribeSystemTheme,
+    getSystemTheme,
+    () => "light" as Theme,
+  );
+
+  const theme: Theme =
+    preference === "system"
+      ? hydrated
+        ? systemTheme
+        : "light"
+      : preference;
 
   useEffect(() => {
-    if (!ready) return;
+    if (!hydrated) return;
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.style.colorScheme = theme;
-  }, [theme, ready]);
-
-  useEffect(() => {
-    if (preference !== "system") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => setTheme(getSystemTheme());
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, [preference]);
+  }, [theme, hydrated]);
 
   const setPreference = useCallback((value: ThemePreference) => {
     setPreferenceState(value);

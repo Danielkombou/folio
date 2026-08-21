@@ -1,26 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { Caveat } from "next/font/google";
 import { motion, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-
-const caveat = Caveat({
-  subsets: ["latin"],
-  weight: "500",
-  display: "swap",
-});
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const links = [
-  { href: "/projects", label: "Projects", hideOnMobile: true },
-  { href: "/writings", label: "Writings", hideOnMobile: true },
-  { href: "/resume.pdf", label: "Download CV", download: true },
+  { href: "/projects", label: "Projects" },
+  { href: "/writings", label: "Writings" },
+  { href: "/resume", label: "Resume" },
+  { href: "/resume.pdf", label: "CV", download: true },
 ];
 
 const COLLAPSED_WIDTH = 76;
 const EXPANDED_MAX_WIDTH = 672;
 const SCROLL_THRESHOLD = 32;
 const SCROLL_DELTA = 8;
+
+function subscribeViewport(onStoreChange: () => void) {
+  window.addEventListener("resize", onStoreChange, { passive: true });
+  return () => window.removeEventListener("resize", onStoreChange);
+}
+
+function getViewportWidth() {
+  return window.innerWidth;
+}
+
+function getServerViewportWidth() {
+  return EXPANDED_MAX_WIDTH;
+}
 
 /** Pixel-block KD mark with script “l” after D. */
 function KDMark() {
@@ -47,7 +54,7 @@ function KDMark() {
         <rect x="31" y="6" width="3" height="8" fill="currentColor" />
       </svg>
       <span
-        className={`${caveat.className} absolute bottom-0 left-[33px] text-[22px] leading-none text-foreground`}
+        className="kd-script-l absolute bottom-0 left-[33px] text-[22px] leading-none text-foreground"
         aria-hidden
       >
         l
@@ -60,11 +67,16 @@ export function Navbar() {
   const [pastThreshold, setPastThreshold] = useState(false);
   const [scrollingUp, setScrollingUp] = useState(false);
   const [navHover, setNavHover] = useState(false);
-  const [viewportWidth, setViewportWidth] = useState(EXPANDED_MAX_WIDTH);
-  const [layoutReady, setLayoutReady] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const viewportWidth = useSyncExternalStore(
+    subscribeViewport,
+    getViewportWidth,
+    getServerViewportWidth,
+  );
   const lastY = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduce = useReducedMotion();
+  const isMobile = viewportWidth < 640;
 
   const onScroll = useCallback(() => {
     const y = window.scrollY;
@@ -88,21 +100,11 @@ export function Navbar() {
     lastY.current = y;
   }, []);
 
-  useLayoutEffect(() => {
-    setViewportWidth(window.innerWidth);
-    setLayoutReady(true);
-  }, []);
-
   useEffect(() => {
-    const syncViewport = () => setViewportWidth(window.innerWidth);
     lastY.current = window.scrollY;
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", syncViewport, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", syncViewport);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, [onScroll]);
 
   const handleNavEnter = () => {
@@ -129,19 +131,25 @@ export function Navbar() {
     };
   }, []);
 
-  const expanded = !pastThreshold || scrollingUp || navHover;
+  useEffect(() => {
+    if (!isMobile) setMenuOpen(false);
+  }, [isMobile]);
+
+  const expanded = !pastThreshold || scrollingUp || navHover || menuOpen;
   const collapsed = !expanded;
   const expandedWidth = Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 24);
 
-  const shellTransition =
-    !layoutReady || reduce
-      ? { duration: 0 }
-      : { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const };
+  const shellTransition = reduce
+    ? { duration: 0 }
+    : { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const };
 
-  const linksTransition =
-    !layoutReady || reduce
-      ? { duration: 0 }
-      : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const, delay: collapsed ? 0 : 0.04 };
+  const linksTransition = reduce
+    ? { duration: 0 }
+    : {
+        duration: 0.28,
+        ease: [0.22, 1, 0.36, 1] as const,
+        delay: collapsed ? 0 : 0.04,
+      };
 
   return (
     <header className="sticky top-0 z-50 flex justify-center px-3 pt-3 sm:px-6">
@@ -155,6 +163,7 @@ export function Navbar() {
         onMouseLeave={handleNavLeave}
         onFocusCapture={handleNavEnter}
         onBlurCapture={handleNavBlur}
+        aria-label="Primary"
         className={`nav-shell relative overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
           collapsed
             ? "nav-shell--glow grid place-items-center py-2"
@@ -169,13 +178,27 @@ export function Navbar() {
           }`}
         >
           <KDMark />
-          <span className="sr-only">KD</span>
+          <span className="sr-only">Home</span>
         </Link>
 
+        {!collapsed && isMobile && (
+          <button
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="primary-nav-links"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="nav-hotspot relative z-10 rounded-md px-2 py-1.5 text-sm text-muted sm:hidden"
+          >
+            Menu
+          </button>
+        )}
+
         <motion.div
+          id="primary-nav-links"
           initial={false}
           animate={{
-            maxWidth: expanded ? (viewportWidth < 640 ? 150 : 380) : 0,
+            maxWidth: expanded ? (isMobile ? 280 : 420) : 0,
             opacity: expanded ? 1 : 0,
           }}
           transition={linksTransition}
@@ -183,22 +206,23 @@ export function Navbar() {
           style={{ pointerEvents: expanded ? "auto" : "none" }}
           aria-hidden={!expanded}
         >
-          <ul className="flex items-center justify-end gap-1.5 whitespace-nowrap text-sm text-muted sm:gap-2 sm:text-base">
+          <ul className="flex items-center justify-end gap-0.5 whitespace-nowrap text-sm text-muted sm:gap-1 sm:text-base">
             {links.map((l) => (
-              <li
-                key={l.href}
-                className={`shrink-0 ${l.hideOnMobile ? "hidden sm:block" : ""}`}
-              >
+              <li key={l.href} className="shrink-0">
                 {l.download ? (
                   <a
                     href={l.href}
                     download="Daniel_Kombou_Resume.pdf"
-                    className="inline-block rounded-md bg-foreground px-3 py-1.5 text-background font-medium transition-colors hover:opacity-90 text-xs sm:text-sm"
+                    className="inline-block rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background transition-colors hover:opacity-90 sm:px-3 sm:text-sm"
                   >
                     {l.label}
                   </a>
                 ) : (
-                  <Link href={l.href} className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3">
+                  <Link
+                    href={l.href}
+                    className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3"
+                    onClick={() => setMenuOpen(false)}
+                  >
                     {l.label}
                   </Link>
                 )}

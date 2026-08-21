@@ -16,11 +16,16 @@ export function ProjectList({ items }: { items: Project[] }) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap gap-2">
+      <div
+        className="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Filter projects by technology"
+      >
         {allTags.map((tag) => (
           <button
             key={tag}
             type="button"
+            aria-pressed={selectedTag === tag}
             onClick={() => setSelectedTag(tag)}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors sm:text-sm ${
               selectedTag === tag
