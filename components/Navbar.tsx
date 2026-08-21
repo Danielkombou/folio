@@ -12,8 +12,8 @@ const caveat = Caveat({
 });
 
 const links = [
-  { href: "/projects", label: "Projects" },
-  { href: "/writings", label: "Writings" },
+  { href: "/projects", label: "Projects", hideOnMobile: true },
+  { href: "/writings", label: "Writings", hideOnMobile: true },
   { href: "/resume.pdf", label: "Download CV", download: true },
 ];
 
@@ -175,7 +175,7 @@ export function Navbar() {
         <motion.div
           initial={false}
           animate={{
-            maxWidth: expanded ? 380 : 0,
+            maxWidth: expanded ? (viewportWidth < 640 ? 150 : 380) : 0,
             opacity: expanded ? 1 : 0,
           }}
           transition={linksTransition}
@@ -185,12 +185,15 @@ export function Navbar() {
         >
           <ul className="flex items-center justify-end gap-1.5 whitespace-nowrap text-sm text-muted sm:gap-2 sm:text-base">
             {links.map((l) => (
-              <li key={l.href} className="shrink-0">
+              <li
+                key={l.href}
+                className={`shrink-0 ${l.hideOnMobile ? "hidden sm:block" : ""}`}
+              >
                 {l.download ? (
                   <a
                     href={l.href}
                     download="Daniel_Kombou_Resume.pdf"
-                    className="inline-block rounded-md bg-foreground px-3 py-1.5 text-background font-medium transition-colors hover:opacity-90"
+                    className="inline-block rounded-md bg-foreground px-3 py-1.5 text-background font-medium transition-colors hover:opacity-90 text-xs sm:text-sm"
                   >
                     {l.label}
                   </a>
