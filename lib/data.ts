@@ -241,6 +241,17 @@ export function getProject(slug: string) {
   return projects.items.find((p) => p.slug === slug);
 }
 
+/** Format ISO date strings for display (e.g. 2026-08-12 → 12 Aug 2026). */
+export function formatDate(iso: string) {
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export const resumeData = {
   summary:
     "Versatile Frontend Developer with a strong foundation in HTML, CSS, JavaScript, and modern frameworks like React.js and Next.js. Proven ability to harness state management libraries, including React Query and Zustand, to enhance application performance. Passionate about creating engaging user experiences through UI/UX best practices and responsive design. Adept at collaborating with cross-functional teams to deliver high-quality web applications on schedule. Committed to leveraging cybersecurity awareness in development processes to mitigate vulnerabilities. Experienced mentor, dedicated to fostering the growth of aspiring developers by sharing knowledge in modern web technologies and project workflows.",

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { SiteFooter } from "@/components/SiteFooter";
-import { writings } from "@/lib/data";
+import { writings, formatDate } from "@/lib/data";
 
 export const metadata = {
   title: "Writings",

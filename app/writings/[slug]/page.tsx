@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/Reveal";
 import { SiteFooter } from "@/components/SiteFooter";
-import { getWriting, writings } from "@/lib/data";
+import { getWriting, writings, formatDate } from "@/lib/data";
 
 export function generateStaticParams() {
   return writings.items.map((w) => ({ slug: w.slug }));
@@ -41,7 +41,7 @@ export default async function WritingPage({
   if (!writing) notFound();
 
   return (
-    <main className="mx-auto max-w-2xl space-y-10 px-5 py-10 sm:px-6 sm:py-14">
+    <main id="main-content" className="mx-auto max-w-2xl space-y-10 px-5 py-10 sm:px-6 sm:py-14">
       <Reveal>
         <div className="space-y-4">
           <Link

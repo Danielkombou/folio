@@ -5,7 +5,7 @@ import { Reveal } from "@/components/Reveal";
 import { SectionHeader } from "@/components/SectionHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StackIcons } from "@/components/StackIcons";
-import { hero, projects, site, stack, writings } from "@/lib/data";
+import { hero, projects, site, stack, writings, formatDate } from "@/lib/data";
 
 const featured = projects.items.slice(0, 2);
 
@@ -120,9 +120,9 @@ export default function Home() {
                   </span>
                   <span className="dotted-leader hidden md:block" />
                   <span className="shrink-0 text-sm text-muted md:text-right md:leading-tight">
-                    <span className="md:hidden">{w.date} · {w.readTime}</span>
+                    <span className="md:hidden">{formatDate(w.date)} · {w.readTime}</span>
                     <span className="hidden md:inline">
-                      {w.date}
+                      {formatDate(w.date)}
                       <br />
                       {w.readTime}
                     </span>
