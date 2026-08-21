@@ -1,0 +1,42 @@
+Kombou Daniel
+Email: danielkombou7@gmail.com | Phone: +237 650503544 | Location: Cameroon - Yaoundé
+Website/Portfolio: https://ticsummit.org | LinkedIn | GitHub
+
+==================================================
+PROFESSIONAL SUMMARY
+==================================================
+Versatile Frontend Developer with a strong foundation in HTML, CSS, JavaScript, and modern frameworks like React.js and Next.js. Proven ability to harness state management libraries, including React Query and Zustand, to enhance application performance. Passionate about creating engaging user experiences through UI/UX best practices and responsive design. Adept at collaborating with cross-functional teams to deliver high-quality web applications on schedule. Committed to leveraging cybersecurity awareness in development processes to mitigate vulnerabilities. Experienced mentor, dedicated to fostering the growth of aspiring developers by sharing knowledge in modern web technologies and project workflows.
+
+==================================================
+WORK EXPERIENCE
+==================================================
+Front-end Developer Intern / Internship Program Manager
+Tic Foundation — Cameroon, Yaoundé
+Nov 2023 - Present
+
+- As a Frontend Developer Intern, I acquired hands-on experience by contributing to various client and in-house projects. I collaborated with multidisciplinary teams to implement scalable and responsive frontend solutions that enhanced user engagement and satisfaction.
+- Promoted to Internship Program Manager for exceptional technical skills, leading the training of over 30 interns across multiple cohorts.
+- Contributed to a project that improved frontend performance metrics by 25%, enhancing user interaction and load times.
+
+==================================================
+PROJECTS
+==================================================
+NextGen Innovators (Feb 2024 - Present)
+Educational initiative where participants engage in hands-on workshops, hackathons, and regional events focused on practical skills from coding to entrepreneurship. The program empowers youth to devise and pitch innovative solutions to real-world challenges.
+Technologies: React.js, TypeScript, Tailwind CSS
+- Hands-on workshops focused on coding and entrepreneurial skills.
+- Comprehensive mentoring and support for participants.
+
+==================================================
+EDUCATION
+==================================================
+- GCE A Level Certificate in Science | GBHS Melong (Sep 2021 - May 2023)
+- GCE O Level Certificate in Science | GBHS Melong (Sep 2016 - May 2021)
+
+==================================================
+SKILLS & EXPERTISE
+==================================================
+- TECHNICAL: HTML5, CSS3, JavaScript (ES6+), TypeScript, React.js, Next.js, Zustand (State Management), Tailwind CSS, Responsive Web Design, UI/UX Implementation, API Integration (REST), Git & GitHub
+- TOOLS: VS Code, Chrome DevTools, Figma
+- SOFT SKILLS: Team Collaboration, Leadership, Adaptability, Accountability, Mentoring & Training
+- LANGUAGES: English, French, Latin
