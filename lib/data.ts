@@ -20,11 +20,16 @@ export const hero = {
 };
 
 export type Project = {
+  slug: string;
   title: string;
   description: string;
+  longDescription?: string;
   href: string;
+  liveUrl?: string;
+  githubUrl?: string;
   image: string;
   tags?: string[];
+  features?: string[];
 };
 
 export const projects = {
@@ -32,41 +37,83 @@ export const projects = {
     "I build tools that solve problems I run into as an engineer — each one a chance to ship, learn, and improve.",
   items: [
     {
+      slug: "attendx",
       title: "AttendX",
       description: "Smart attendance tracking for modern teams and organizations.",
-      href: "https://github.com/Danielkombou",
+      longDescription: "AttendX is a smart attendance tracking platform designed for modern teams and organizations. It simplifies checking in, tracking hours, and managing presence without burying teams in complicated setup.",
+      href: "https://attend-tichub.vercel.app/",
+      liveUrl: "https://attend-tichub.vercel.app/",
+      githubUrl: "https://github.com/Danielkombou",
       image: "/projects/attendx.webp",
       tags: ["Next.js", "TypeScript", "Tailwind"],
+      features: [
+        "Real-time presence tracking and hour logs",
+        "Clean, intuitive UI designed for fast adoption",
+        "Optimized load times and responsive mobile experience"
+      ],
     },
     {
+      slug: "certigen",
       title: "CertiGen",
       description: "Bulk certificate generation from templates with instant PDF export.",
-      href: "https://github.com/Danielkombou/Academia-Frontend",
+      longDescription: "CertiGen streamlines certificate issuance for events, bootcamps, and institutions by enabling template-based bulk generation and instant PDF exports.",
+      href: "https://certigen-swart.vercel.app/",
+      liveUrl: "https://certigen-swart.vercel.app/",
+      githubUrl: "https://github.com/Danielkombou/Academia-Frontend",
       image: "/projects/academia.webp",
       tags: ["React", "PDF", "Node.js"],
+      features: [
+        "Bulk certificate generation from custom templates",
+        "Instant client-side/server-side PDF export",
+        "Streamlined workflow for educational events and hackathons"
+      ],
     },
     {
+      slug: "jarvis",
       title: "JARVIS",
       description:
         "Terminal cybersecurity assistant for network scanning, vulnerability assessment, and ethical security testing on Ubuntu.",
+      longDescription: "JARVIS is a terminal cybersecurity assistant built in Python on Ubuntu. It provides structured network scanning, vulnerability assessment, and reporting to assist with ethical security testing.",
       href: "https://github.com/Danielkombou/jarvis",
+      githubUrl: "https://github.com/Danielkombou/jarvis",
       image: "/projects/jarvis.webp",
       tags: ["Python", "Nmap", "Security"],
+      features: [
+        "Automated network discovery and Nmap integration",
+        "Vulnerability assessment and structured report generation",
+        "Modular command-line architecture for custom security extensions"
+      ],
     },
     {
+      slug: "ecocleaners",
       title: "EcoCleaners",
       description:
         "B2B waste exchange platform that turns scrap into revenue by connecting traders with specialized recyclers.",
+      longDescription: "EcoCleaners is a B2B waste exchange marketplace designed to convert industrial or domestic scrap into economic revenue by connecting waste generators with specialized recyclers.",
       href: "https://github.com/NebaFavour/v0-waste-exchange-platform",
+      githubUrl: "https://github.com/NebaFavour/v0-waste-exchange-platform",
       image: "/projects/ecocleaners.webp",
       tags: ["Next.js", "Marketplace", "GreenTech"],
+      features: [
+        "B2B marketplace connecting waste traders and recyclers",
+        "GreenTech focus promoting sustainable scrap management",
+        "Responsive, modern Next.js frontend architecture"
+      ],
     },
     {
+      slug: "dino-run",
       title: "Dino Run",
       description: "Chrome-dino inspired endless runner built with Python and Pygame.",
+      longDescription: "A Python recreation of the classic Chrome Dino endless runner game, built with Pygame to explore game loops, collision detection, and sprite rendering.",
       href: "https://github.com/Danielkombou",
+      githubUrl: "https://github.com/Danielkombou",
       image: "/projects/dino-run.svg",
       tags: ["Python", "Pygame"],
+      features: [
+        "Smooth arcade game loop and gravity mechanics",
+        "Custom obstacle generation and collision detection",
+        "Built using Python and Pygame"
+      ],
     },
   ] satisfies Project[],
 };
