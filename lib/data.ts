@@ -44,7 +44,7 @@ export const projects = {
       href: "https://certigen-swart.vercel.app/",
       liveUrl: "https://certigen-swart.vercel.app/",
       githubUrl: "https://github.com/Danielkombou/Academia-Frontend",
-      image: "/projects/academia.webp",
+      image: "/projects/certigen.webp",
       tags: ["React", "PDF", "Node.js"],
       features: [
         "Bulk certificate generation from custom templates",
@@ -177,7 +177,7 @@ export const writings = {
     {
       slug: "cybersecurity-passion-to-jarvis",
       title: "From curiosity to JARVIS",
-      date: "12/08/26",
+      date: "2026-08-12",
       readTime: "6 min read",
       excerpt:
         "How a growing passion for cybersecurity turned into building JARVIS — a terminal assistant for ethical security work.",

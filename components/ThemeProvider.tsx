@@ -40,27 +40,21 @@ function readStoredPreference(): ThemePreference {
   return "system";
 }
 
-function resolveTheme(preference: ThemePreference): Theme {
-  return preference === "system" ? getSystemTheme() : preference;
-}
-
 function subscribeSystemTheme(onStoreChange: () => void) {
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
   mq.addEventListener("change", onStoreChange);
   return () => mq.removeEventListener("change", onStoreChange);
 }
 
-function getSnapshotTheme(preference: ThemePreference): Theme {
-  return resolveTheme(preference);
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>("system");
-  const [hydrated, setHydrated] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
+  // Sync preference from localStorage after mount (avoids hydration mismatch).
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional client hydration sync
     setPreferenceState(readStoredPreference());
-    setHydrated(true);
+    setMounted(true);
   }, []);
 
   const systemTheme = useSyncExternalStore(
@@ -70,17 +64,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const theme: Theme =
-    preference === "system"
-      ? hydrated
-        ? systemTheme
-        : "light"
-      : preference;
+    preference === "system" ? (mounted ? systemTheme : "light") : preference;
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!mounted) return;
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.documentElement.style.colorScheme = theme;
-  }, [theme, hydrated]);
+  }, [theme, mounted]);
 
   const setPreference = useCallback((value: ThemePreference) => {
     setPreferenceState(value);

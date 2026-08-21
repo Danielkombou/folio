@@ -227,19 +227,19 @@ export function StackIcons({ items }: { items: StackItem[] }) {
         return (
           <li
             key={item.name}
-            className="group relative"
+            className="stack-icon group relative"
             style={{ transform: `translateY(${lift}px) rotate(${tilt}deg)` }}
           >
-            <span
-              className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground group-focus-within:-translate-y-1 group-focus-within:scale-110"
-              style={{ color: isMono ? undefined : item.color }}
-              tabIndex={0}
+            <button
+              type="button"
               aria-label={item.name}
+              className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110 focus-visible:outline-none"
+              style={{ color: isMono ? undefined : item.color }}
             >
               <span className="grayscale transition duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0">
                 {icons[item.name] ?? <FallbackMark name={item.name} />}
               </span>
-            </span>
+            </button>
             <span className="pointer-events-none absolute -bottom-7 left-1/2 z-10 -translate-x-1/2 rotate-[-8deg] whitespace-nowrap rounded-md bg-foreground px-2 py-0.5 text-[11px] text-background opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
               {item.name}
             </span>

@@ -7,8 +7,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 const links = [
   { href: "/projects", label: "Projects" },
   { href: "/writings", label: "Writings" },
-  { href: "/resume", label: "Resume" },
-  { href: "/resume.pdf", label: "CV", download: true },
+  { href: "/resume.pdf", label: "Download CV", download: true },
 ];
 
 const COLLAPSED_WIDTH = 76;
