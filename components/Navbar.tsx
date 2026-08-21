@@ -14,7 +14,7 @@ const caveat = Caveat({
 const links = [
   { href: "/projects", label: "Projects" },
   { href: "/writings", label: "Writings" },
-  { href: "/resume", label: "Resume" },
+  { href: "/resume.pdf", label: "Resume", download: true },
 ];
 
 const COLLAPSED_WIDTH = 76;
@@ -186,9 +186,19 @@ export function Navbar() {
           <ul className="flex items-center justify-end gap-0.5 whitespace-nowrap text-sm text-muted sm:gap-1 sm:text-base">
             {links.map((l) => (
               <li key={l.href} className="shrink-0">
-                <Link href={l.href} className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3">
-                  {l.label}
-                </Link>
+                {l.download ? (
+                  <a
+                    href={l.href}
+                    download="Daniel_Kombou_Resume.pdf"
+                    className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3"
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link href={l.href} className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3">
+                    {l.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
