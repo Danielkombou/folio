@@ -14,6 +14,7 @@ const caveat = Caveat({
 const links = [
   { href: "/projects", label: "Projects" },
   { href: "/writings", label: "Writings" },
+  { href: "/resume", label: "Resume" },
 ];
 
 const COLLAPSED_WIDTH = 76;

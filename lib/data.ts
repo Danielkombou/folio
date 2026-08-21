@@ -237,3 +237,58 @@ export const writings = {
 export function getWriting(slug: string) {
   return writings.items.find((w) => w.slug === slug);
 }
+
+export function getProject(slug: string) {
+  return projects.items.find((p) => p.slug === slug);
+}
+
+export const resumeData = {
+  summary:
+    "Versatile Frontend Developer with a strong foundation in HTML, CSS, JavaScript, and modern frameworks like React.js and Next.js. Proven ability to harness state management libraries, including React Query and Zustand, to enhance application performance. Passionate about creating engaging user experiences through UI/UX best practices and responsive design. Adept at collaborating with cross-functional teams to deliver high-quality web applications on schedule. Committed to leveraging cybersecurity awareness in development processes to mitigate vulnerabilities. Experienced mentor, dedicated to fostering the growth of aspiring developers by sharing knowledge in modern web technologies and project workflows.",
+  experience: [
+    {
+      role: "Front-end Developer Intern / Internship Program Manager",
+      company: "Tic Foundation",
+      location: "Cameroon, Yaoundé",
+      period: "Nov 2023 - Present",
+      highlights: [
+        "Contributed to various client and in-house projects, implementing scalable and responsive frontend solutions that enhanced user engagement and satisfaction.",
+        "Promoted to Internship Program Manager for exceptional technical skills, leading the training of over 30 interns across multiple cohorts.",
+        "Contributed to a project that improved frontend performance metrics by 25%, enhancing user interaction and load times.",
+      ],
+    },
+  ],
+  education: [
+    {
+      degree: "GCE A Level Certificate in Science",
+      institution: "GBHS Melong",
+      location: "Cameroon, Littoral",
+      period: "Sep 2021 - May 2023",
+    },
+    {
+      degree: "GCE O Level Certificate in Science",
+      institution: "GBHS Melong",
+      location: "Cameroon, Littoral Region",
+      period: "Sep 2016 - May 2021",
+    },
+  ],
+  skills: {
+    soft: ["Team Collaboration", "Leadership", "Adaptability", "Accountability", "Mentoring & Training"],
+    languages: ["English", "French", "Latin"],
+    technical: [
+      "HTML5",
+      "CSS3",
+      "JavaScript (ES6+)",
+      "TypeScript",
+      "React.js",
+      "Next.js",
+      "Zustand (State Management)",
+      "Tailwind CSS",
+      "Responsive Web Design",
+      "UI/UX Implementation",
+      "API Integration (REST)",
+      "Git & GitHub",
+    ],
+    tools: ["VS Code", "Chrome DevTools", "Figma"],
+  },
+};
