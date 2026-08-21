@@ -5,7 +5,6 @@ export type StackItem = {
 
 export const site = {
   name: "Daniel Kombou",
-  initials: "KD",
   email: "danielkombou7@gmail.com",
   github: "https://github.com/Danielkombou",
   socials: [
@@ -192,7 +191,7 @@ export const writings = {
     {
       slug: "building-attendx-from-scratch",
       title: "Building AttendX from scratch",
-      date: "29/05/26",
+      date: "2026-05-29",
       readTime: "5 min read",
       excerpt:
         "What I learned shipping an attendance product end to end — auth, data model, and the UI details that matter.",
@@ -206,7 +205,7 @@ export const writings = {
     {
       slug: "mentoring-the-next-generation",
       title: "Mentoring the next generation of engineers",
-      date: "15/03/26",
+      date: "2026-03-15",
       readTime: "4 min read",
       excerpt:
         "Lessons from facilitating at Tic Foundation and helping interns turn confusion into momentum.",
@@ -220,7 +219,7 @@ export const writings = {
     {
       slug: "read-your-error-messages",
       title: "Read Your Error Messages",
-      date: "21/01/26",
+      date: "2026-01-21",
       readTime: "3 min read",
       excerpt:
         "Most bugs get quieter when you stop guessing and start reading what the runtime already told you.",
