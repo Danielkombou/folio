@@ -103,6 +103,19 @@ body::before {
   .nav-shell--glow {
     animation: none;
   }
+
+  .stack-icon {
+    transform: none !important;
+  }
+
+  .stack-icon button {
+    transition: none;
+  }
+
+  .stack-icon button:hover,
+  .stack-icon button:focus-visible {
+    transform: none;
+  }
 }
 
 .nav-hotspot {

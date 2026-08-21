@@ -15,10 +15,19 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const writing = getWriting(slug);
-  if (!writing) return { title: "Writing · Daniel Kombou" };
+  if (!writing) return { title: "Writing" };
   return {
-    title: `${writing.title} · Daniel Kombou`,
+    title: writing.title,
     description: writing.excerpt,
+    openGraph: {
+      title: `${writing.title} · Daniel Kombou`,
+      description: writing.excerpt,
+    },
+    twitter: {
+      card: "summary",
+      title: `${writing.title} · Daniel Kombou`,
+      description: writing.excerpt,
+    },
   };
 }
 

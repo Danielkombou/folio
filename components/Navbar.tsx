@@ -66,7 +66,6 @@ export function Navbar() {
   const [pastThreshold, setPastThreshold] = useState(false);
   const [scrollingUp, setScrollingUp] = useState(false);
   const [navHover, setNavHover] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const viewportWidth = useSyncExternalStore(
     subscribeViewport,
     getViewportWidth,
@@ -130,11 +129,7 @@ export function Navbar() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isMobile) setMenuOpen(false);
-  }, [isMobile]);
-
-  const expanded = !pastThreshold || scrollingUp || navHover || menuOpen;
+  const expanded = !pastThreshold || scrollingUp || navHover;
   const collapsed = !expanded;
   const expandedWidth = Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 24);
 
@@ -180,24 +175,11 @@ export function Navbar() {
           <span className="sr-only">Home</span>
         </Link>
 
-        {!collapsed && isMobile && (
-          <button
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="primary-nav-links"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMenuOpen((open) => !open)}
-            className="nav-hotspot relative z-10 rounded-md px-2 py-1.5 text-sm text-muted sm:hidden"
-          >
-            Menu
-          </button>
-        )}
-
         <motion.div
           id="primary-nav-links"
           initial={false}
           animate={{
-            maxWidth: expanded ? (isMobile ? 280 : 420) : 0,
+            maxWidth: expanded ? (isMobile ? 300 : 420) : 0,
             opacity: expanded ? 1 : 0,
           }}
           transition={linksTransition}
@@ -217,11 +199,7 @@ export function Navbar() {
                     {l.label}
                   </a>
                 ) : (
-                  <Link
-                    href={l.href}
-                    className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3"
-                    onClick={() => setMenuOpen(false)}
-                  >
+                  <Link href={l.href} className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3">
                     {l.label}
                   </Link>
                 )}

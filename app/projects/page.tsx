@@ -5,13 +5,13 @@ import { ProjectList } from "@/components/ProjectList";
 import { projects, site } from "@/lib/data";
 
 export const metadata = {
-  title: "Projects · Daniel Kombou",
+  title: "Projects",
   description: "Selected work by Daniel Kombou",
 };
 
 export default function ProjectsPage() {
   return (
-    <main className="mx-auto max-w-2xl space-y-12 px-5 py-10 sm:px-6 sm:py-14">
+    <main id="main-content" className="mx-auto max-w-2xl space-y-12 px-5 py-10 sm:px-6 sm:py-14">
       <Reveal>
         <div className="space-y-4">
           <Link

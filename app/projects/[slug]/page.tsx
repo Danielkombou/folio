@@ -16,10 +16,21 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const project = getProject(slug);
-  if (!project) return { title: "Project · Daniel Kombou" };
+  if (!project) return { title: "Project" };
   return {
-    title: `${project.title} · Daniel Kombou`,
+    title: project.title,
     description: project.description,
+    openGraph: {
+      title: `${project.title} · Daniel Kombou`,
+      description: project.description,
+      images: [{ url: project.image }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} · Daniel Kombou`,
+      description: project.description,
+      images: [project.image],
+    },
   };
 }
 
@@ -33,7 +44,7 @@ export default async function ProjectDetailPage({
   if (!project) notFound();
 
   return (
-    <main className="mx-auto max-w-2xl space-y-12 px-5 py-10 sm:px-6 sm:py-14">
+    <main id="main-content" className="mx-auto max-w-2xl space-y-12 px-5 py-10 sm:px-6 sm:py-14">
       <Reveal>
         <div className="space-y-4">
           <Link
