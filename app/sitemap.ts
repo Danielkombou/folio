@@ -1,9 +1,9 @@
 import { MetadataRoute } from "next";
 import { projects, writings } from "@/lib/data";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://danielkombou.dev"; // or user's production domain
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://danielkombou.dev";
 
+export default function sitemap(): MetadataRoute.Sitemap {
   const projectUrls = projects.items.map((p) => ({
     url: `${baseUrl}/projects/${p.slug}`,
     lastModified: new Date(),
