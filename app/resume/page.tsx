@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { SiteFooter } from "@/components/SiteFooter";
+import { PrintButton } from "@/components/PrintButton";
 import { resumeData, site } from "@/lib/data";
 
 export const metadata = {
@@ -23,13 +24,7 @@ export default function ResumePage() {
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Resume</h1>
           </div>
           <div>
-            <button
-              onClick="window.print()"
-              type="button"
-              className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/80 print:hidden"
-            >
-              Print / Save PDF 🖨️
-            </button>
+            <PrintButton />
           </div>
         </div>
       </Reveal>
