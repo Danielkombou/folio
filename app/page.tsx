@@ -11,7 +11,7 @@ const featured = projects.items.slice(0, 2);
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-2xl space-y-16 px-5 py-10 sm:space-y-20 sm:px-6 sm:py-14">
+    <main id="main-content" className="mx-auto max-w-2xl space-y-16 px-5 py-10 sm:space-y-20 sm:px-6 sm:py-14">
       <Reveal>
         <section className="space-y-5">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -57,7 +57,7 @@ export default function Home() {
       <section>
         <Reveal>
           <SectionHeader
-            title="Recent Project"
+            title="Recent projects"
             href="/projects"
             icon={
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -72,7 +72,7 @@ export default function Home() {
         </Reveal>
         <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2">
           {featured.map((p, i) => (
-            <ProjectCard key={p.title} project={p} delay={i * 0.08} priority={i === 0} />
+            <ProjectCard key={p.slug} project={p} delay={i * 0.08} priority={i === 0} />
           ))}
         </div>
       </section>

@@ -18,7 +18,7 @@ export default function Error({
     <main className="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center space-y-6 px-5 py-10 text-center sm:px-6">
       <h1 className="text-4xl font-bold tracking-tight">Something went wrong</h1>
       <p className="text-base text-muted">
-        An unexpected error occurred. We have been notified and are looking into it.
+        An unexpected error occurred. You can try again or return home.
       </p>
       <div className="flex gap-4">
         <button
