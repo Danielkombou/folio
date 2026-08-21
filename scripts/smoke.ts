@@ -1,5 +1,11 @@
 import assert from "node:assert/strict";
-import { getProject, getWriting, projects, writings, formatDate } from "../lib/data";
+import {
+  formatDate,
+  getProject,
+  getWriting,
+  projects,
+  writings,
+} from "../lib/data";
 
 assert.ok(getProject("certigen"), "certigen project should exist");
 assert.ok(getWriting("read-your-error-messages"), "writing should exist");

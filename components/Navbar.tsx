@@ -63,7 +63,9 @@ function KDMark() {
 }
 
 export function Navbar() {
-  const [pastThreshold, setPastThreshold] = useState(false);
+  const [pastThreshold, setPastThreshold] = useState(() =>
+    typeof window !== "undefined" ? window.scrollY > SCROLL_THRESHOLD : false,
+  );
   const [scrollingUp, setScrollingUp] = useState(false);
   const [navHover, setNavHover] = useState(false);
   const viewportWidth = useSyncExternalStore(
@@ -100,7 +102,6 @@ export function Navbar() {
 
   useEffect(() => {
     lastY.current = window.scrollY;
-    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [onScroll]);
