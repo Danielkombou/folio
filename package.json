@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "smoke": "npx --yes tsx scripts/smoke.ts"
   },
   "dependencies": {
     "framer-motion": "^12.43.0",

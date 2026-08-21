@@ -31,6 +31,7 @@ The downloadable CV is [`public/resume.pdf`](public/resume.pdf).
 | `npm run build` | Production build |
 | `npm run start` | Serve production build |
 | `npm run lint` | ESLint |
+| `npm run smoke` | Data/route smoke checks |
 
 ## Environment
 
