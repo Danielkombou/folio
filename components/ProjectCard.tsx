@@ -32,8 +32,8 @@ export function ProjectCard({
         </div>
         <div className="flex min-h-[8.5rem] flex-1 flex-col justify-between border-t border-border p-4 sm:min-h-[9rem] sm:p-5">
           <div>
-            <p className="mb-1.5 text-base font-semibold">{project.title}</p>
-            <p className="text-sm leading-relaxed text-muted">{project.description}</p>
+            <p className="mb-1.5 text-base font-semibold break-words">{project.title}</p>
+            <p className="text-sm leading-relaxed text-muted break-words">{project.description}</p>
           </div>
           {project.tags && project.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">

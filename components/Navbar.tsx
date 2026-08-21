@@ -175,7 +175,7 @@ export function Navbar() {
         <motion.div
           initial={false}
           animate={{
-            maxWidth: expanded ? 320 : 0,
+            maxWidth: expanded ? 380 : 0,
             opacity: expanded ? 1 : 0,
           }}
           transition={linksTransition}
