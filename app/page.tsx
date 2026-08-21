@@ -21,12 +21,12 @@ export default function Home() {
             I&apos;m a software engineer building technology that creates opportunities and
             solves real-world problems. Currently building{" "}
             <a
-              href="https://attend-tichub.vercel.app/"
+              href="https://certigen-swart.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold underline underline-offset-2 transition-colors hover:text-foreground/60"
             >
-              AttendX
+              CertiGen
             </a>
             .
           </p>

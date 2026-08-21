@@ -37,22 +37,6 @@ export const projects = {
     "I build tools that solve problems I run into as an engineer — each one a chance to ship, learn, and improve.",
   items: [
     {
-      slug: "attendx",
-      title: "AttendX",
-      description: "Smart attendance tracking for modern teams and organizations.",
-      longDescription: "AttendX is a smart attendance tracking platform designed for modern teams and organizations. It simplifies checking in, tracking hours, and managing presence without burying teams in complicated setup.",
-      href: "https://attend-tichub.vercel.app/",
-      liveUrl: "https://attend-tichub.vercel.app/",
-      githubUrl: "https://github.com/Danielkombou",
-      image: "/projects/attendx.webp",
-      tags: ["Next.js", "TypeScript", "Tailwind"],
-      features: [
-        "Real-time presence tracking and hour logs",
-        "Clean, intuitive UI designed for fast adoption",
-        "Optimized load times and responsive mobile experience"
-      ],
-    },
-    {
       slug: "certigen",
       title: "CertiGen",
       description: "Bulk certificate generation from templates with instant PDF export.",
@@ -66,6 +50,22 @@ export const projects = {
         "Bulk certificate generation from custom templates",
         "Instant client-side/server-side PDF export",
         "Streamlined workflow for educational events and hackathons"
+      ],
+    },
+    {
+      slug: "attendx",
+      title: "AttendX",
+      description: "Smart attendance tracking for modern teams and organizations.",
+      longDescription: "AttendX is a smart attendance tracking platform designed for modern teams and organizations. It simplifies checking in, tracking hours, and managing presence without burying teams in complicated setup.",
+      href: "https://attend-tichub.vercel.app/",
+      liveUrl: "https://attend-tichub.vercel.app/",
+      githubUrl: "https://github.com/Danielkombou",
+      image: "/projects/attendx.webp",
+      tags: ["Next.js", "TypeScript", "Tailwind"],
+      features: [
+        "Real-time presence tracking and hour logs",
+        "Clean, intuitive UI designed for fast adoption",
+        "Optimized load times and responsive mobile experience"
       ],
     },
     {
