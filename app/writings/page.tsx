@@ -37,7 +37,7 @@ export default function WritingsPage() {
                     {w.title}
                   </h2>
                   <span className="shrink-0 text-sm text-muted">
-                    {w.date} · {w.readTime}
+                    {formatDate(w.date)} · {w.readTime}
                   </span>
                 </div>
                 <p className="text-sm leading-relaxed text-muted sm:text-base">{w.excerpt}</p>

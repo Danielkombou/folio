@@ -54,7 +54,7 @@ export default async function WritingPage({
             {writing.title}
           </h1>
           <p className="text-sm text-muted sm:text-base">
-            {writing.date} · {writing.readTime}
+            {formatDate(writing.date)} · {writing.readTime}
           </p>
         </div>
       </Reveal>
