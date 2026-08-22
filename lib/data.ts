@@ -3,11 +3,6 @@ export type StackItem = {
   color: string;
 };
 
-export type StackStage = {
-  title: string;
-  items: StackItem[];
-};
-
 export const site = {
   name: "Daniel Kombou",
   email: "danielkombou7@gmail.com",
@@ -124,75 +119,45 @@ export const projects = {
 
 export const stack = {
   description:
-    "Tools and languages I reach for — ordered how I grew into them, from the basics to shipping.",
-  stages: [
-    {
-      title: "Foundations",
-      items: [
-        { name: "HTML5", color: "#E34F26" },
-        { name: "CSS3", color: "#1572B6" },
-        { name: "JavaScript", color: "#F7DF1E" },
-        { name: "Git", color: "#F05032" },
-        { name: "GitHub", color: "#181717" },
-      ],
-    },
-    {
-      title: "Frontend",
-      items: [
-        { name: "Bootstrap", color: "#7952B3" },
-        { name: "Tailwind CSS", color: "#06B6D4" },
-        { name: "TypeScript", color: "#3178C6" },
-        { name: "React", color: "#61DAFB" },
-        { name: "Next.js", color: "#000000" },
-        { name: "Context API", color: "#61DAFB" },
-        { name: "Zustand", color: "#443E38" },
-        { name: "React Query", color: "#FF4154" },
-        { name: "Axios", color: "#5A29E4" },
-        { name: "Framer Motion", color: "#0055FF" },
-        { name: "Lucide", color: "#F56565" },
-        { name: "Figma", color: "#F24E1E" },
-      ],
-    },
-    {
-      title: "Backend",
-      items: [
-        { name: "Node.js", color: "#339933" },
-        { name: "Express.js", color: "#000000" },
-        { name: "REST APIs", color: "#FF6B35" },
-        { name: "SQL", color: "#336791" },
-        { name: "MongoDB", color: "#47A248" },
-        { name: "PostgreSQL", color: "#4169E1" },
-        { name: "Neon", color: "#00E699" },
-        { name: "BetterAuth", color: "#7C3AED" },
-        { name: "Postman", color: "#FF6C37" },
-      ],
-    },
-    {
-      title: "Languages & mobile",
-      items: [
-        { name: "Python", color: "#3776AB" },
-        { name: "Java", color: "#ED8B00" },
-        { name: "Flutter", color: "#02569B" },
-      ],
-    },
-    {
-      title: "Agents & tools",
-      items: [
-        { name: "VS Code", color: "#007ACC" },
-        { name: "Cursor AI", color: "#000000" },
-        { name: "OpenCode", color: "#10B981" },
-      ],
-    },
-    {
-      title: "Deploy",
-      items: [
-        { name: "Vercel", color: "#000000" },
-        { name: "Netlify", color: "#00C7B7" },
-        { name: "Railway", color: "#0B0D0E" },
-        { name: "Render", color: "#46E3B7" },
-      ],
-    },
-  ] satisfies StackStage[],
+    "Tools and languages I reach for day to day — from UI to APIs and deployment.",
+  items: [
+    { name: "HTML5", color: "#E34F26" },
+    { name: "CSS3", color: "#1572B6" },
+    { name: "JavaScript", color: "#F7DF1E" },
+    { name: "TypeScript", color: "#3178C6" },
+    { name: "React", color: "#61DAFB" },
+    { name: "Next.js", color: "#000000" },
+    { name: "Tailwind CSS", color: "#06B6D4" },
+    { name: "Bootstrap", color: "#7952B3" },
+    { name: "MongoDB", color: "#47A248" },
+    { name: "PostgreSQL", color: "#4169E1" },
+    { name: "Neon", color: "#00E699" },
+    { name: "Node.js", color: "#339933" },
+    { name: "Express.js", color: "#000000" },
+    { name: "REST APIs", color: "#FF6B35" },
+    { name: "BetterAuth", color: "#7C3AED" },
+    { name: "Flutter", color: "#02569B" },
+    { name: "Python", color: "#3776AB" },
+    { name: "Java", color: "#ED8B00" },
+    { name: "SQL", color: "#336791" },
+    { name: "Git", color: "#F05032" },
+    { name: "GitHub", color: "#181717" },
+    { name: "VS Code", color: "#007ACC" },
+    { name: "Cursor AI", color: "#000000" },
+    { name: "OpenCode", color: "#10B981" },
+    { name: "Figma", color: "#F24E1E" },
+    { name: "Vercel", color: "#000000" },
+    { name: "Netlify", color: "#00C7B7" },
+    { name: "Railway", color: "#0B0D0E" },
+    { name: "Render", color: "#46E3B7" },
+    { name: "Postman", color: "#FF6C37" },
+    { name: "Zustand", color: "#443E38" },
+    { name: "React Query", color: "#FF4154" },
+    { name: "Context API", color: "#61DAFB" },
+    { name: "Axios", color: "#5A29E4" },
+    { name: "Framer Motion", color: "#0055FF" },
+    { name: "Lucide", color: "#F56565" },
+  ] satisfies StackItem[],
 };
 
 export type Writing = {
