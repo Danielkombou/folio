@@ -87,10 +87,10 @@ export default function Home() {
               </svg>
             }
           />
-          <p className="mb-6 text-sm leading-relaxed text-muted sm:text-base">
+          <p className="mb-4 text-sm leading-relaxed text-muted sm:text-base">
             {stack.description}
           </p>
-          <StackIcons stages={stack.stages} />
+          <StackIcons items={stack.items} />
         </section>
       </Reveal>
 

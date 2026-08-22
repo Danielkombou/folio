@@ -17,7 +17,7 @@ Most site content lives in [`lib/data.ts`](lib/data.ts):
 
 - Hero / site meta
 - Projects (including detail pages under `/projects/[slug]`)
-- Tech stack (learning-path stages in `lib/data.ts`)
+- Tech stack
 - Writings
 - Resume data (`/resume`)
 
