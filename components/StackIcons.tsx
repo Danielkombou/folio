@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import type { StackItem } from "@/lib/data";
+import type { StackStage } from "@/lib/data";
 
 const TRACE = "#f97316";
 const DRAW_S = 0.9;
@@ -225,11 +225,10 @@ function FallbackMark({ name }: { name: string }) {
 
 type Point = { x: number; y: number };
 
-/** TechTrace Grid — one orange segment steps node → node; hover stays classic. */
-export function StackIcons({ items }: { items: StackItem[] }) {
+/** Roadmap stages — orange path traces the learning journey icon → icon. */
+export function StackIcons({ stages }: { stages: StackStage[] }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
   const nodeRefs = useRef<(HTMLLIElement | null)[]>([]);
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const drawnForStep = useRef<number | null>(null);
@@ -240,6 +239,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
 
+  const items = stages.flatMap((s) => s.items);
   const n = items.length;
   const fromIdx = step;
   const toIdx = n > 0 ? (step + 1) % n : 0;
@@ -247,43 +247,52 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   const to = points[toIdx];
   const tracing = !reduce && inView && !paused && n > 1 && from && to;
 
+  const staged = (() => {
+    let offset = 0;
+    return stages.map((stage) => {
+      const start = offset;
+      offset += stage.items.length;
+      return { ...stage, start };
+    });
+  })();
+
   const measure = useCallback(() => {
-    const list = listRef.current;
-    if (!list) return;
-    const root = list.getBoundingClientRect();
+    const root = rootRef.current;
+    if (!root) return;
+    const box = root.getBoundingClientRect();
     const next: Point[] = [];
     for (let i = 0; i < n; i++) {
       const el = nodeRefs.current[i];
       if (!el) continue;
       const r = el.getBoundingClientRect();
       next.push({
-        x: r.left - root.left + r.width / 2,
-        y: r.top - root.top + r.height / 2,
+        x: r.left - box.left + r.width / 2,
+        y: r.top - box.top + r.height / 2,
       });
     }
     setPoints(next);
-    setSize({ w: list.clientWidth, h: list.clientHeight });
+    setSize({ w: root.clientWidth, h: root.clientHeight });
   }, [n]);
 
   useEffect(() => {
     measure();
-    const list = listRef.current;
-    if (!list) return;
+    const root = rootRef.current;
+    if (!root) return;
     const ro = new ResizeObserver(measure);
-    ro.observe(list);
+    ro.observe(root);
     window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [measure, items]);
+  }, [measure, stages]);
 
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const io = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.25 },
+      { threshold: 0.2 },
     );
     io.observe(root);
     return () => io.disconnect();
@@ -319,88 +328,107 @@ export function StackIcons({ items }: { items: StackItem[] }) {
       : "";
 
   return (
-    <div ref={rootRef} className="tech-trace relative w-full" aria-label="Tech stack">
-      <ul
-        ref={listRef}
-        className="relative flex w-full flex-wrap justify-center gap-x-4 gap-y-8 overflow-x-clip py-2 sm:gap-x-7 sm:gap-y-10"
-        onMouseLeave={() => setPaused(false)}
-      >
-        {size.w > 0 && tracing && segmentD && (
-          <svg
-            className="pointer-events-none absolute inset-0 z-0 overflow-visible"
-            width={size.w}
-            height={size.h}
-            aria-hidden
-          >
-            <motion.path
-              key={step}
-              d={segmentD}
-              fill="none"
-              stroke={TRACE}
-              strokeWidth={2}
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0.35 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: DRAW_S, ease: EASE }}
-              onAnimationComplete={onSegmentDrawn}
-            />
-          </svg>
-        )}
+    <div
+      ref={rootRef}
+      className="tech-trace relative w-full space-y-6"
+      aria-label="Tech stack learning roadmap"
+      onMouseLeave={() => setPaused(false)}
+    >
+      {size.w > 0 && tracing && segmentD && (
+        <svg
+          className="pointer-events-none absolute inset-0 z-0 overflow-visible"
+          width={size.w}
+          height={size.h}
+          aria-hidden
+        >
+          <motion.path
+            key={step}
+            d={segmentD}
+            fill="none"
+            stroke={TRACE}
+            strokeWidth={2}
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0.35 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: DRAW_S, ease: EASE }}
+            onAnimationComplete={onSegmentDrawn}
+          />
+        </svg>
+      )}
 
-        {items.map((item, i) => {
-          const isMono = mono.has(item.name) || item.color === "#000000";
-          const tilt = ((i % 5) - 2) * 5;
-          const lift = (i % 3) * 8 - 8;
-          const isActive = tracing && arrived && i === toIdx;
-
-          return (
-            <li
-              key={item.name}
-              ref={(el) => {
-                nodeRefs.current[i] = el;
-              }}
-              className="stack-icon group relative z-10"
-              style={{ transform: `translateY(${lift}px) rotate(${tilt}deg)` }}
-              onMouseEnter={() => {
-                setPaused(true);
-                setArrived(false);
-                drawnForStep.current = null;
-                if (holdTimer.current) {
-                  clearTimeout(holdTimer.current);
-                  holdTimer.current = null;
-                }
-              }}
+      {staged.map((stage, stageIdx) => (
+        <div key={stage.title} className="relative z-10 space-y-3">
+          <div className="flex items-center gap-3">
+            <span
+              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-card text-[11px] font-medium text-muted"
+              aria-hidden
             >
-              <motion.button
-                type="button"
-                aria-label={item.name}
-                aria-current={isActive ? "true" : undefined}
-                className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110 focus-visible:outline-none"
-                style={{ color: isMono ? undefined : item.color }}
-                animate={isActive ? { scale: 1.12 } : { scale: 1 }}
-                transition={{ duration: 0.5, ease: EASE }}
-              >
-                <span
-                  className={`grayscale transition duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0 ${
-                    isActive ? "grayscale-0" : ""
-                  }`}
+              {stageIdx + 1}
+            </span>
+            <h3 className="text-sm font-medium tracking-tight text-foreground sm:text-base">
+              {stage.title}
+            </h3>
+            <span className="h-px flex-1 bg-border" aria-hidden />
+          </div>
+
+          <ul className="flex w-full flex-wrap justify-start gap-x-4 gap-y-8 overflow-x-clip py-1 pl-2 sm:gap-x-6 sm:gap-y-9 sm:pl-9">
+            {stage.items.map((item, localIdx) => {
+              const i = stage.start + localIdx;
+              const isMono = mono.has(item.name) || item.color === "#000000";
+              const tilt = ((i % 5) - 2) * 4;
+              const lift = (i % 3) * 6 - 6;
+              const isActive = tracing && arrived && i === toIdx;
+
+              return (
+                <li
+                  key={item.name}
+                  ref={(el) => {
+                    nodeRefs.current[i] = el;
+                  }}
+                  className="stack-icon group relative z-10"
+                  style={{ transform: `translateY(${lift}px) rotate(${tilt}deg)` }}
+                  onMouseEnter={() => {
+                    setPaused(true);
+                    setArrived(false);
+                    drawnForStep.current = null;
+                    if (holdTimer.current) {
+                      clearTimeout(holdTimer.current);
+                      holdTimer.current = null;
+                    }
+                  }}
                 >
-                  {icons[item.name] ?? <FallbackMark name={item.name} />}
-                </span>
-              </motion.button>
-              <span
-                className={`pointer-events-none absolute -bottom-7 left-1/2 z-10 max-w-[9rem] -translate-x-1/2 truncate rounded-md bg-foreground px-2 py-0.5 text-[11px] text-background transition sm:max-w-none sm:rotate-[-8deg] sm:overflow-visible sm:whitespace-nowrap ${
-                  isActive
-                    ? "opacity-100"
-                    : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
-                }`}
-              >
-                {item.name}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+                  <motion.button
+                    type="button"
+                    aria-label={item.name}
+                    aria-current={isActive ? "true" : undefined}
+                    className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110 focus-visible:outline-none"
+                    style={{ color: isMono ? undefined : item.color }}
+                    animate={isActive ? { scale: 1.12 } : { scale: 1 }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                  >
+                    <span
+                      className={`grayscale transition duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0 ${
+                        isActive ? "grayscale-0" : ""
+                      }`}
+                    >
+                      {icons[item.name] ?? <FallbackMark name={item.name} />}
+                    </span>
+                  </motion.button>
+                  <span
+                    className={`pointer-events-none absolute -bottom-7 left-1/2 z-10 max-w-[9rem] -translate-x-1/2 truncate rounded-md bg-foreground px-2 py-0.5 text-[11px] text-background transition sm:max-w-none sm:rotate-[-8deg] sm:overflow-visible sm:whitespace-nowrap ${
+                      isActive
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                    }`}
+                  >
+                    {item.name}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }

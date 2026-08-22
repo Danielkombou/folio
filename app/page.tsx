@@ -80,17 +80,17 @@ export default function Home() {
       <Reveal>
         <section>
           <SectionHeader
-            title="Tech stack"
+            title="Learning path"
             icon={
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                 <path d="M12 0l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 14.8 5.8 19.3l2.4-7.4L2 7.4h7.6z" />
               </svg>
             }
           />
-          <p className="mb-4 text-sm leading-relaxed text-muted sm:text-base">
+          <p className="mb-6 text-sm leading-relaxed text-muted sm:text-base">
             {stack.description}
           </p>
-          <StackIcons items={stack.items} />
+          <StackIcons stages={stack.stages} />
         </section>
       </Reveal>
 
