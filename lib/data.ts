@@ -124,7 +124,7 @@ export const projects = {
 
 export const stack = {
   description:
-    "How my toolkit grew — from the web basics through frontend, backend, agents, and shipping.",
+    "Tools and languages I reach for — ordered how I grew into them, from the basics to shipping.",
   stages: [
     {
       title: "Foundations",

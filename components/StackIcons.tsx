@@ -225,8 +225,10 @@ function FallbackMark({ name }: { name: string }) {
 
 type Point = { x: number; y: number };
 
+const EMPTY_STAGES: StackStage[] = [];
+
 /** Roadmap stages — orange path traces the learning journey icon → icon. */
-export function StackIcons({ stages = [] }: { stages?: StackStage[] }) {
+export function StackIcons({ stages }: { stages?: StackStage[] }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -239,7 +241,7 @@ export function StackIcons({ stages = [] }: { stages?: StackStage[] }) {
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
 
-  const safeStages = Array.isArray(stages) ? stages : [];
+  const safeStages = Array.isArray(stages) ? stages : EMPTY_STAGES;
   const items = safeStages.flatMap((s) => s.items ?? []);
   const n = items.length;
   const fromIdx = step;
