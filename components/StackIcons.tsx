@@ -291,11 +291,13 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const drawnForLeg = useRef<number | null>(null);
   const pathRef = useRef<number[]>([]);
+  const cursorRef = useRef(0);
+  const firstPassRef = useRef(true);
+  const seededRef = useRef(false);
   const [points, setPoints] = useState<Point[]>([]);
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [fromIdx, setFromIdx] = useState(0);
   const [toIdx, setToIdx] = useState(0);
-  const [cursor, setCursor] = useState(0);
   const [leg, setLeg] = useState(0);
   const [arrived, setArrived] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -344,18 +346,20 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     };
   }, [measure, items]);
 
-  // Build column path once positions are known; restart crawl from top-left.
+  // Build column path once; keep indices on resize, refresh geometry only.
   useEffect(() => {
     if (points.length < 2) return;
     const path = columnZigzag(clusterRows(points));
     if (path.length < 2) return;
     pathRef.current = path;
+    if (seededRef.current) return;
+    seededRef.current = true;
+    cursorRef.current = 0;
     setFromIdx(path[0]);
     setToIdx(path[1]);
-    setCursor(0);
-    setLeg((l) => l + 1);
     setReady(true);
     reveal(path[0]);
+    setLeg((l) => l + 1);
   }, [points, reveal]);
 
   useEffect(() => {
@@ -388,10 +392,11 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     const path = pathRef.current;
     if (path.length < 2) return;
 
-    const nextCursor = cursor + 1;
+    const nextCursor = cursorRef.current + 1;
     // Finished the route — soft loop to start (no long wrap line).
     if (nextCursor >= path.length - 1) {
-      if (firstPass) {
+      if (firstPassRef.current) {
+        firstPassRef.current = false;
         setFirstPass(false);
         setRevealed((prev) => {
           const all: Record<number, boolean> = { ...prev };
@@ -399,19 +404,19 @@ export function StackIcons({ items }: { items: StackItem[] }) {
           return all;
         });
       }
+      cursorRef.current = 0;
       setFromIdx(path[0]);
       setToIdx(path[1]);
-      setCursor(0);
       setLeg((l) => l + 1);
       return;
     }
 
     const landed = path[nextCursor];
     const next = path[nextCursor + 1];
+    cursorRef.current = nextCursor;
     reveal(landed);
     setFromIdx(landed);
     setToIdx(next);
-    setCursor(nextCursor);
     setLeg((l) => l + 1);
   }
 
