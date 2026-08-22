@@ -226,7 +226,7 @@ function FallbackMark({ name }: { name: string }) {
 type Point = { x: number; y: number };
 
 /** Roadmap stages — orange path traces the learning journey icon → icon. */
-export function StackIcons({ stages }: { stages: StackStage[] }) {
+export function StackIcons({ stages = [] }: { stages?: StackStage[] }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -239,7 +239,8 @@ export function StackIcons({ stages }: { stages: StackStage[] }) {
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
 
-  const items = stages.flatMap((s) => s.items);
+  const safeStages = Array.isArray(stages) ? stages : [];
+  const items = safeStages.flatMap((s) => s.items ?? []);
   const n = items.length;
   const fromIdx = step;
   const toIdx = n > 0 ? (step + 1) % n : 0;
@@ -249,10 +250,10 @@ export function StackIcons({ stages }: { stages: StackStage[] }) {
 
   const staged = (() => {
     let offset = 0;
-    return stages.map((stage) => {
+    return safeStages.map((stage) => {
       const start = offset;
-      offset += stage.items.length;
-      return { ...stage, start };
+      offset += (stage.items ?? []).length;
+      return { ...stage, items: stage.items ?? [], start };
     });
   })();
 
@@ -285,7 +286,7 @@ export function StackIcons({ stages }: { stages: StackStage[] }) {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [measure, stages]);
+  }, [measure, safeStages]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -331,7 +332,7 @@ export function StackIcons({ stages }: { stages: StackStage[] }) {
     <div
       ref={rootRef}
       className="tech-trace relative w-full space-y-6"
-      aria-label="Tech stack learning roadmap"
+      aria-label="Tech stack"
       onMouseLeave={() => setPaused(false)}
     >
       {size.w > 0 && tracing && segmentD && (
