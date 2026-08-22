@@ -36,6 +36,24 @@ export const projects = {
     "I build tools that solve problems I run into as an engineer — each one a chance to ship, learn, and improve.",
   items: [
     {
+      slug: "readit",
+      title: "ReadIt",
+      description:
+        "Paste long text and listen instantly — a lightweight text-to-speech reader built for focus and speed.",
+      longDescription:
+        "ReadIt is a simple text-to-speech web app for people who struggle through long posts online. Paste or type text, hit play, and listen at your own pace. It ships with a clean, accessible interface and is designed to grow into summarization and a browser extension for reading any page out loud.",
+      href: "https://read-it-ecru.vercel.app/",
+      liveUrl: "https://read-it-ecru.vercel.app/",
+      githubUrl: "https://github.com/Danielkombou/ReadIt",
+      image: "/projects/readit.svg",
+      tags: ["React", "TypeScript", "Vite", "TTS"],
+      features: [
+        "Paste or enter text and listen with instant playback",
+        "Minimal UI focused on accessibility and ease of use",
+        "Built to evolve toward summarization and a browser extension",
+      ],
+    },
+    {
       slug: "certigen",
       title: "CertiGen",
       description: "Bulk certificate generation from templates with instant PDF export.",
@@ -173,6 +191,21 @@ export const writings = {
   description:
     "Notes on engineering, mentoring, and the small moments where things finally click.",
   items: [
+    {
+      slug: "why-i-built-readit",
+      title: "Why I built ReadIt",
+      date: "2026-08-21",
+      readTime: "4 min read",
+      excerpt:
+        "Long posts online were slowing me down — so I built a tool that reads them out loud, with summarization still ahead.",
+      content: [
+        "I love learning online, but long articles and dense posts often wear me down. My eyes jump, my focus slips, and I abandon pieces I actually want to finish.",
+        "ReadIt started as a personal fix: paste the text, press play, and listen. Text-to-speech turned reading into something I could keep up with — on a walk, between tasks, or when staring at a wall of paragraphs felt impossible.",
+        "I kept the first version deliberately small. React, TypeScript, and Vite. A clean surface. Instant playback. No clutter. Accessibility and clarity mattered more than features on day one.",
+        "Summarization is next — a way to skim the spine of a piece before deciding to listen deeper. Longer term I want a browser extension so any page can speak without copy-paste.",
+        "Building ReadIt reminded me why I ship tools: when the friction is mine, the product stays honest. If it helps me finish more of what I start reading, it is already doing its job.",
+      ],
+    },
     {
       slug: "cybersecurity-passion-to-jarvis",
       title: "From curiosity to JARVIS",

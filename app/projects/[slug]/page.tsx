@@ -54,7 +54,18 @@ export default async function ProjectDetailPage({
             ← Projects
           </Link>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            {project.title}
+            {project.liveUrl ? (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-foreground/70"
+              >
+                {project.title}
+              </a>
+            ) : (
+              project.title
+            )}
           </h1>
           <p className="text-base leading-relaxed text-muted">
             {project.description}
