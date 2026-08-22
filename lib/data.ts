@@ -45,7 +45,7 @@ export const projects = {
       href: "https://read-it-ecru.vercel.app/",
       liveUrl: "https://read-it-ecru.vercel.app/",
       githubUrl: "https://github.com/Danielkombou/ReadIt",
-      image: "/projects/readit.svg",
+      image: "/projects/readit.png",
       tags: ["React", "TypeScript", "Vite", "TTS"],
       features: [
         "Paste or enter text and listen with instant playback",
