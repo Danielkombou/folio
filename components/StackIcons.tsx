@@ -5,8 +5,10 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { StackItem } from "@/lib/data";
 
 const TRACE = "#f97316";
-const DRAW_S = 0.9;
-const HOLD_MS = 1100;
+const DRAW_S = 0.72;
+const HOLD_MS = 720;
+/** Reach-then-plant: quick lift, firm land. */
+const GAIT = [0.4, 0.02, 0.2, 1] as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const mono = new Set([
@@ -225,7 +227,19 @@ function FallbackMark({ name }: { name: string }) {
 
 type Point = { x: number; y: number };
 
-/** TechTrace Grid — single orange segment steps across the original constellation. */
+function stepCurve(a: Point, b: Point, side: 1 | -1): string {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = (-dy / len) * side;
+  const ny = (dx / len) * side;
+  const lift = Math.min(32, Math.max(12, len * 0.32));
+  const cx = (a.x + b.x) / 2 + nx * lift;
+  const cy = (a.y + b.y) / 2 + ny * lift;
+  return `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+}
+
+/** TechTrace Grid — spider-gait orange steps across the constellation. */
 export function StackIcons({ items }: { items: StackItem[] }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -313,10 +327,8 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     }, HOLD_MS);
   }
 
-  const segmentD =
-    from && to
-      ? `M${from.x.toFixed(1)} ${from.y.toFixed(1)} L${to.x.toFixed(1)} ${to.y.toFixed(1)}`
-      : "";
+  const segmentD = from && to ? stepCurve(from, to, step % 2 === 0 ? 1 : -1) : "";
+  const planting = tracing && arrived;
 
   return (
     <div ref={rootRef} className="tech-trace relative w-full" aria-label="Tech stack">
@@ -332,6 +344,17 @@ export function StackIcons({ items }: { items: StackItem[] }) {
             height={size.h}
             aria-hidden
           >
+            {/* Planted foot — stays on the origin while the next leg reaches. */}
+            <motion.circle
+              key={`plant-${step}`}
+              cx={from.x}
+              cy={from.y}
+              r={3.5}
+              fill={TRACE}
+              initial={{ scale: 0.6, opacity: 0.5 }}
+              animate={{ scale: 1, opacity: 0.95 }}
+              transition={{ duration: 0.28, ease: EASE }}
+            />
             <motion.path
               key={step}
               d={segmentD}
@@ -339,11 +362,23 @@ export function StackIcons({ items }: { items: StackItem[] }) {
               stroke={TRACE}
               strokeWidth={2}
               strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0.35 }}
+              initial={{ pathLength: 0, opacity: 0.4 }}
               animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: DRAW_S, ease: EASE }}
+              transition={{ duration: DRAW_S, ease: GAIT }}
               onAnimationComplete={onSegmentDrawn}
             />
+            {planting && to && (
+              <motion.circle
+                key={`land-${step}`}
+                cx={to.x}
+                cy={to.y}
+                r={4}
+                fill={TRACE}
+                initial={{ scale: 0.4, opacity: 0 }}
+                animate={{ scale: [0.4, 1.25, 1], opacity: 1 }}
+                transition={{ duration: 0.38, ease: EASE }}
+              />
+            )}
           </svg>
         )}
 
@@ -351,7 +386,8 @@ export function StackIcons({ items }: { items: StackItem[] }) {
           const isMono = mono.has(item.name) || item.color === "#000000";
           const tilt = ((i % 5) - 2) * 5;
           const lift = (i % 3) * 8 - 8;
-          const isActive = tracing && arrived && i === toIdx;
+          const isActive = planting && i === toIdx;
+          const isPlanted = tracing && !paused && i === fromIdx;
 
           return (
             <li
@@ -377,12 +413,18 @@ export function StackIcons({ items }: { items: StackItem[] }) {
                 aria-current={isActive ? "true" : undefined}
                 className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110 focus-visible:outline-none"
                 style={{ color: isMono ? undefined : item.color }}
-                animate={isActive ? { scale: 1.12 } : { scale: 1 }}
-                transition={{ duration: 0.5, ease: EASE }}
+                animate={
+                  isActive
+                    ? { scale: 1.14 }
+                    : isPlanted
+                      ? { scale: 1.06 }
+                      : { scale: 1 }
+                }
+                transition={{ duration: 0.4, ease: EASE }}
               >
                 <span
                   className={`grayscale transition duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0 ${
-                    isActive ? "grayscale-0" : ""
+                    isActive || isPlanted ? "grayscale-0" : ""
                   }`}
                 >
                   {icons[item.name] ?? <FallbackMark name={item.name} />}
