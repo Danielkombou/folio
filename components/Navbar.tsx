@@ -5,9 +5,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const links = [
-  { href: "/projects", label: "Projects" },
-  { href: "/writings", label: "Writings" },
-  { href: "/resume.pdf", label: "Download CV", download: true },
+  { href: "/projects", label: "Projects", short: "Projects" },
+  { href: "/writings", label: "Writings", short: "Writings" },
+  { href: "/resume.pdf", label: "Download CV", short: "CV", download: true },
 ];
 
 const COLLAPSED_WIDTH = 76;
@@ -132,7 +132,10 @@ export function Navbar() {
 
   const expanded = !pastThreshold || scrollingUp || navHover;
   const collapsed = !expanded;
-  const expandedWidth = Math.min(EXPANDED_MAX_WIDTH, viewportWidth - 24);
+
+  // Keep expanded nav inside the padded header (px-3 = 24px total on mobile).
+  const horizontalPad = isMobile ? 24 : 48;
+  const expandedWidth = Math.min(EXPANDED_MAX_WIDTH, Math.max(280, viewportWidth - horizontalPad));
 
   const shellTransition = reduce
     ? { duration: 0 }
@@ -147,68 +150,73 @@ export function Navbar() {
       };
 
   return (
-    <header className="sticky top-0 z-50 flex justify-center px-3 pt-3 sm:px-6">
-      <motion.nav
-        initial={false}
-        animate={{
-          width: collapsed ? COLLAPSED_WIDTH : expandedWidth,
-        }}
-        transition={shellTransition}
-        onMouseEnter={handleNavEnter}
-        onMouseLeave={handleNavLeave}
-        onFocusCapture={handleNavEnter}
-        onBlurCapture={handleNavBlur}
-        aria-label="Primary"
-        className={`nav-shell relative overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
-          collapsed
-            ? "nav-shell--glow grid place-items-center py-2"
-            : "flex items-center justify-between gap-1 px-3 py-2.5 sm:gap-2 sm:px-4"
-        }`}
-      >
-        <Link
-          href="/"
-          aria-label="Daniel Kombou home"
-          className={`nav-hotspot z-10 shrink-0 overflow-visible rounded-md text-foreground ${
-            collapsed ? "relative col-start-1 row-start-1 px-0 py-1" : "relative px-1.5 py-1"
-          }`}
-        >
-          <KDMark />
-          <span className="sr-only">Home</span>
-        </Link>
-
-        <motion.div
-          id="primary-nav-links"
+    <header className="sticky top-0 z-50 w-full max-w-[100vw] px-3 pt-3 sm:px-6">
+      <div className="mx-auto flex w-full max-w-2xl justify-center">
+        <motion.nav
           initial={false}
           animate={{
-            maxWidth: expanded ? (isMobile ? 300 : 420) : 0,
-            opacity: expanded ? 1 : 0,
+            width: collapsed ? COLLAPSED_WIDTH : expandedWidth,
           }}
-          transition={linksTransition}
-          className={`min-w-0 overflow-hidden ${collapsed ? "hidden" : "flex flex-1 justify-end"}`}
-          style={{ pointerEvents: expanded ? "auto" : "none" }}
-          aria-hidden={!expanded}
+          transition={shellTransition}
+          onMouseEnter={handleNavEnter}
+          onMouseLeave={handleNavLeave}
+          onFocusCapture={handleNavEnter}
+          onBlurCapture={handleNavBlur}
+          aria-label="Primary"
+          className={`nav-shell relative overflow-hidden rounded-md border border-border/80 bg-background/90 backdrop-blur-md ${
+            collapsed
+              ? "nav-shell--glow grid place-items-center py-2"
+              : "flex w-full items-center justify-between gap-1 px-2 py-2 sm:gap-2 sm:px-4 sm:py-2.5"
+          }`}
         >
-          <ul className="flex items-center justify-end gap-0.5 whitespace-nowrap text-sm text-muted sm:gap-1 sm:text-base">
-            {links.map((l) => (
-              <li key={l.href} className="shrink-0">
-                {l.download ? (
-                  <a
-                    href={l.href}
-                    download="Daniel_Kombou_Resume.pdf"
-                    className="inline-block rounded-md bg-foreground px-2.5 py-1.5 text-xs font-medium text-background transition-colors hover:opacity-90 sm:px-3 sm:text-sm"
-                  >
-                    {l.label}
-                  </a>
-                ) : (
-                  <Link href={l.href} className="nav-hotspot block rounded-md px-2 py-1.5 sm:px-3">
-                    {l.label}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-      </motion.nav>
+          <Link
+            href="/"
+            aria-label="Daniel Kombou home"
+            className={`nav-hotspot z-10 shrink-0 overflow-visible rounded-md text-foreground ${
+              collapsed ? "relative col-start-1 row-start-1 px-0 py-1" : "relative px-1 py-1"
+            }`}
+          >
+            <KDMark />
+            <span className="sr-only">Home</span>
+          </Link>
+
+          <motion.div
+            id="primary-nav-links"
+            initial={false}
+            animate={{
+              opacity: expanded ? 1 : 0,
+            }}
+            transition={linksTransition}
+            className={`min-w-0 ${collapsed ? "hidden" : "flex flex-1 justify-end"}`}
+            style={{ pointerEvents: expanded ? "auto" : "none" }}
+            aria-hidden={!expanded}
+          >
+            <ul className="flex max-w-full flex-nowrap items-center justify-end gap-0.5 whitespace-nowrap text-xs text-muted sm:gap-1 sm:text-base">
+              {links.map((l) => (
+                <li key={l.href} className="shrink-0">
+                  {l.download ? (
+                    <a
+                      href={l.href}
+                      download="Daniel_Kombou_Resume.pdf"
+                      className="inline-block rounded-md bg-foreground px-2 py-1.5 text-[11px] font-medium text-background transition-colors hover:opacity-90 sm:px-3 sm:text-sm"
+                    >
+                      <span className="sm:hidden">{l.short}</span>
+                      <span className="hidden sm:inline">{l.label}</span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={l.href}
+                      className="nav-hotspot block rounded-md px-1.5 py-1.5 sm:px-3"
+                    >
+                      {l.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </motion.nav>
+      </div>
     </header>
   );
 }

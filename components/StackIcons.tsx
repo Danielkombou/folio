@@ -219,7 +219,7 @@ function FallbackMark({ name }: { name: string }) {
 /** Diagonal constellation stack — no boxes, social-link energy. */
 export function StackIcons({ items }: { items: StackItem[] }) {
   return (
-    <ul className="relative flex w-full flex-wrap justify-center gap-x-5 gap-y-8 py-2 sm:gap-x-7 sm:gap-y-10">
+    <ul className="relative flex w-full flex-wrap justify-center gap-x-4 gap-y-8 overflow-x-clip py-2 sm:gap-x-7 sm:gap-y-10">
       {items.map((item, i) => {
         const isMono = mono.has(item.name) || item.color === "#000000";
         const tilt = ((i % 5) - 2) * 5;
@@ -240,7 +240,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
                 {icons[item.name] ?? <FallbackMark name={item.name} />}
               </span>
             </button>
-            <span className="pointer-events-none absolute -bottom-7 left-1/2 z-10 -translate-x-1/2 rotate-[-8deg] whitespace-nowrap rounded-md bg-foreground px-2 py-0.5 text-[11px] text-background opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+            <span className="pointer-events-none absolute -bottom-7 left-1/2 z-10 max-w-[9rem] -translate-x-1/2 truncate rounded-md bg-foreground px-2 py-0.5 text-[11px] text-background opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100 sm:max-w-none sm:rotate-[-8deg] sm:overflow-visible sm:whitespace-nowrap">
               {item.name}
             </span>
           </li>
