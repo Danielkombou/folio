@@ -227,16 +227,56 @@ function FallbackMark({ name }: { name: string }) {
 
 type Point = { x: number; y: number };
 
+/** Prefer short hops so the trace never spans a full row jump. */
+const MAX_HOP = 130;
+
 function stepCurve(a: Point, b: Point, side: 1 | -1): string {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const len = Math.hypot(dx, dy) || 1;
   const nx = (-dy / len) * side;
   const ny = (dx / len) * side;
-  const lift = Math.min(32, Math.max(12, len * 0.32));
+  const lift = Math.min(28, Math.max(10, len * 0.3));
   const cx = (a.x + b.x) / 2 + nx * lift;
   const cy = (a.y + b.y) / 2 + ny * lift;
   return `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+}
+
+function dist(a: Point, b: Point) {
+  return Math.hypot(b.x - a.x, b.y - a.y);
+}
+
+/** Random nearby target — local spider walk, never a long row-wrap line. */
+function pickNearby(from: number, pts: Point[], recent: number[]): number {
+  if (pts.length < 2) return from;
+  const a = pts[from];
+  const avoid = new Set(recent.slice(-5));
+  avoid.add(from);
+
+  const near = pts
+    .map((p, i) => ({ i, d: dist(a, p) }))
+    .filter((x) => !avoid.has(x.i) && x.d > 6 && x.d <= MAX_HOP)
+    .sort((x, y) => x.d - y.d);
+
+  const pool = near.length > 0
+    ? near
+    : pts
+        .map((p, i) => ({ i, d: dist(a, p) }))
+        .filter((x) => x.i !== from && x.d > 6 && x.d <= MAX_HOP)
+        .sort((x, y) => x.d - y.d);
+
+  if (pool.length === 0) {
+    // Isolated — hop to absolute nearest (still short), else stay.
+    const closest = pts
+      .map((p, i) => ({ i, d: dist(a, p) }))
+      .filter((x) => x.i !== from)
+      .sort((x, y) => x.d - y.d)[0];
+    return closest && closest.d <= MAX_HOP * 1.35 ? closest.i : from;
+  }
+
+  // Bias toward a few closest neighbors for a natural crawl.
+  const top = pool.slice(0, Math.min(5, pool.length));
+  return top[Math.floor(Math.random() * top.length)].i;
 }
 
 /** TechTrace Grid — spider-gait orange steps across the constellation. */
@@ -246,20 +286,23 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   const listRef = useRef<HTMLUListElement>(null);
   const nodeRefs = useRef<(HTMLLIElement | null)[]>([]);
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const drawnForStep = useRef<number | null>(null);
+  const drawnForLeg = useRef<number | null>(null);
+  const recentRef = useRef<number[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
   const [size, setSize] = useState({ w: 0, h: 0 });
-  const [step, setStep] = useState(0);
+  const [fromIdx, setFromIdx] = useState(0);
+  const [toIdx, setToIdx] = useState(1);
+  const [leg, setLeg] = useState(0);
   const [arrived, setArrived] = useState(false);
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
+  const [ready, setReady] = useState(false);
 
   const n = items.length;
-  const fromIdx = step;
-  const toIdx = n > 0 ? (step + 1) % n : 0;
   const from = points[fromIdx];
   const to = points[toIdx];
-  const tracing = !reduce && inView && !paused && n > 1 && from && to;
+  const hopOk = from && to && dist(from, to) <= MAX_HOP * 1.4;
+  const tracing = !reduce && inView && !paused && ready && n > 1 && hopOk;
 
   const measure = useCallback(() => {
     const list = listRef.current;
@@ -292,6 +335,18 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     };
   }, [measure, items]);
 
+  // Seed a random short hop once positions exist.
+  useEffect(() => {
+    if (points.length < 2 || ready) return;
+    const start = Math.floor(Math.random() * points.length);
+    const next = pickNearby(start, points, []);
+    if (next === start) return;
+    setFromIdx(start);
+    setToIdx(next);
+    recentRef.current = [start];
+    setReady(true);
+  }, [points, ready]);
+
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -305,12 +360,12 @@ export function StackIcons({ items }: { items: StackItem[] }) {
 
   useEffect(() => {
     setArrived(false);
-    drawnForStep.current = null;
+    drawnForLeg.current = null;
     if (holdTimer.current) {
       clearTimeout(holdTimer.current);
       holdTimer.current = null;
     }
-  }, [step]);
+  }, [leg]);
 
   useEffect(() => {
     return () => {
@@ -318,16 +373,37 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     };
   }, []);
 
-  function onSegmentDrawn() {
-    if (drawnForStep.current === step || paused || reduce || !inView) return;
-    drawnForStep.current = step;
-    setArrived(true);
-    holdTimer.current = setTimeout(() => {
-      setStep((s) => (s + 1) % n);
-    }, HOLD_MS);
+  function advanceWalk() {
+    const landed = toIdx;
+    recentRef.current = [...recentRef.current, landed].slice(-8);
+    const next = pickNearby(landed, points, recentRef.current);
+    if (next === landed) {
+      // No short hop from here — soft teleport (new short pair, no long draw).
+      let seed = Math.floor(Math.random() * n);
+      let hop = pickNearby(seed, points, [seed]);
+      for (let t = 0; t < 16 && (hop === seed || dist(points[seed], points[hop]) > MAX_HOP); t++) {
+        seed = Math.floor(Math.random() * n);
+        hop = pickNearby(seed, points, [seed]);
+      }
+      if (hop === seed) return;
+      setFromIdx(seed);
+      setToIdx(hop);
+      recentRef.current = [seed];
+    } else {
+      setFromIdx(landed);
+      setToIdx(next);
+    }
+    setLeg((l) => l + 1);
   }
 
-  const segmentD = from && to ? stepCurve(from, to, step % 2 === 0 ? 1 : -1) : "";
+  function onSegmentDrawn() {
+    if (drawnForLeg.current === leg || paused || reduce || !inView) return;
+    drawnForLeg.current = leg;
+    setArrived(true);
+    holdTimer.current = setTimeout(advanceWalk, HOLD_MS);
+  }
+
+  const segmentD = from && to && hopOk ? stepCurve(from, to, leg % 2 === 0 ? 1 : -1) : "";
   const planting = tracing && arrived;
 
   return (
@@ -346,7 +422,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
           >
             {/* Planted foot — stays on the origin while the next leg reaches. */}
             <motion.circle
-              key={`plant-${step}`}
+              key={`plant-${leg}`}
               cx={from.x}
               cy={from.y}
               r={3.5}
@@ -356,7 +432,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
               transition={{ duration: 0.28, ease: EASE }}
             />
             <motion.path
-              key={step}
+              key={leg}
               d={segmentD}
               fill="none"
               stroke={TRACE}
@@ -369,7 +445,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
             />
             {planting && to && (
               <motion.circle
-                key={`land-${step}`}
+                key={`land-${leg}`}
                 cx={to.x}
                 cy={to.y}
                 r={4}
@@ -400,7 +476,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
               onMouseEnter={() => {
                 setPaused(true);
                 setArrived(false);
-                drawnForStep.current = null;
+                drawnForLeg.current = null;
                 if (holdTimer.current) {
                   clearTimeout(holdTimer.current);
                   holdTimer.current = null;
