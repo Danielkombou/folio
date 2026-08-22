@@ -1,6 +1,11 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import type { StackItem } from "@/lib/data";
+
+const TRACE = "#f97316";
+const DWELL_MS = 1600;
 
 const mono = new Set([
   "Next.js",
@@ -216,36 +221,204 @@ function FallbackMark({ name }: { name: string }) {
   );
 }
 
-/** Diagonal constellation stack — no boxes, social-link energy. */
+type Point = { x: number; y: number };
+
+/** TechTrace Grid — orange SVG path guides focus across monochrome stack nodes. */
 export function StackIcons({ items }: { items: StackItem[] }) {
+  const reduce = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const nodeRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [points, setPoints] = useState<Point[]>([]);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const [active, setActive] = useState(0);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [inView, setInView] = useState(false);
+
+  const focused = hovered ?? active;
+  const n = items.length;
+
+  const measure = useCallback(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const root = list.getBoundingClientRect();
+    const next: Point[] = [];
+    for (let i = 0; i < n; i++) {
+      const el = nodeRefs.current[i];
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      next.push({
+        x: r.left - root.left + r.width / 2,
+        y: r.top - root.top + r.height / 2,
+      });
+    }
+    setPoints(next);
+    setSize({ w: list.clientWidth, h: list.clientHeight });
+  }, [n]);
+
+  useEffect(() => {
+    measure();
+    const list = listRef.current;
+    if (!list) return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(list);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [measure, items]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.25 },
+    );
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (reduce || !inView || hovered !== null || n < 2) return;
+    const id = window.setInterval(() => {
+      setActive((i) => (i + 1) % n);
+    }, DWELL_MS);
+    return () => window.clearInterval(id);
+  }, [reduce, inView, hovered, n]);
+
+  const pathD =
+    points.length > 1
+      ? points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ")
+      : "";
+
+  const pathLen = (() => {
+    if (points.length < 2) return 0;
+    let len = 0;
+    for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1];
+      const b = points[i];
+      len += Math.hypot(b.x - a.x, b.y - a.y);
+    }
+    return len;
+  })();
+
+  // Progress of the orange head through the full polyline (0 → pathLen).
+  const headProgress = (() => {
+    if (points.length < 2 || pathLen === 0) return 0;
+    let len = 0;
+    const target = Math.min(focused, points.length - 1);
+    for (let i = 1; i <= target; i++) {
+      const a = points[i - 1];
+      const b = points[i];
+      len += Math.hypot(b.x - a.x, b.y - a.y);
+    }
+    return len;
+  })();
+
   return (
-    <ul className="relative flex w-full flex-wrap justify-center gap-x-4 gap-y-8 overflow-x-clip py-2 sm:gap-x-7 sm:gap-y-10">
-      {items.map((item, i) => {
-        const isMono = mono.has(item.name) || item.color === "#000000";
-        const tilt = ((i % 5) - 2) * 5;
-        const lift = (i % 3) * 8 - 8;
-        return (
-          <li
-            key={item.name}
-            className="stack-icon group relative"
-            style={{ transform: `translateY(${lift}px) rotate(${tilt}deg)` }}
+    <div ref={rootRef} className="tech-trace relative w-full" aria-label="Tech stack">
+      <ul
+        ref={listRef}
+        className="relative flex w-full flex-wrap justify-center gap-x-4 gap-y-8 overflow-x-clip py-2 sm:gap-x-7 sm:gap-y-10"
+      >
+        {size.w > 0 && pathD && !reduce && (
+          <svg
+            className="pointer-events-none absolute inset-0 z-0 overflow-visible"
+            width={size.w}
+            height={size.h}
+            aria-hidden
           >
-            <button
-              type="button"
-              aria-label={item.name}
-              className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110 focus-visible:outline-none"
-              style={{ color: isMono ? undefined : item.color }}
+            <path
+              d={pathD}
+              fill="none"
+              stroke={TRACE}
+              strokeWidth="1"
+              strokeOpacity="0.18"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d={pathD}
+              fill="none"
+              stroke={TRACE}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={`${Math.max(headProgress, 0.01)} ${Math.max(pathLen, 1)}`}
+              className="tech-trace-line"
+              style={{ transition: `stroke-dasharray ${DWELL_MS * 0.45}ms ease-out` }}
+            />
+            {points[focused] && (
+              <circle
+                cx={points[focused].x}
+                cy={points[focused].y}
+                r="14"
+                fill="none"
+                stroke={TRACE}
+                strokeWidth="1.5"
+                strokeOpacity="0.55"
+                className="tech-trace-ring"
+              />
+            )}
+          </svg>
+        )}
+
+        {items.map((item, i) => {
+          const isMono = mono.has(item.name) || item.color === "#000000";
+          const tilt = ((i % 5) - 2) * 5;
+          const lift = (i % 3) * 8 - 8;
+          const isFocus = i === focused;
+          const color = isFocus ? (isMono ? undefined : item.color) : undefined;
+
+          return (
+            <li
+              key={item.name}
+              ref={(el) => {
+                nodeRefs.current[i] = el;
+              }}
+              className="stack-icon group relative z-10"
+              style={{ transform: `translateY(${lift}px) rotate(${tilt}deg)` }}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              onFocus={() => setHovered(i)}
+              onBlur={() => setHovered(null)}
             >
-              <span className="grayscale transition duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0">
-                {icons[item.name] ?? <FallbackMark name={item.name} />}
+              <button
+                type="button"
+                aria-label={item.name}
+                aria-current={isFocus ? "true" : undefined}
+                className={`inline-flex transition duration-300 focus-visible:outline-none ${
+                  isFocus
+                    ? "scale-125 text-foreground"
+                    : "text-foreground/45 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110"
+                }`}
+                style={isFocus ? { color: color ?? "var(--foreground)" } : undefined}
+              >
+                <span
+                  className={`transition duration-300 ${
+                    isFocus ? "grayscale-0" : "grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100"
+                  }`}
+                  style={isFocus && !isMono ? { color: item.color } : undefined}
+                >
+                  {icons[item.name] ?? <FallbackMark name={item.name} />}
+                </span>
+              </button>
+              <span
+                className={`pointer-events-none absolute -bottom-7 left-1/2 z-20 max-w-[9rem] -translate-x-1/2 truncate rounded-md px-2 py-0.5 text-[11px] transition sm:max-w-none sm:rotate-[-8deg] sm:overflow-visible sm:whitespace-nowrap ${
+                  isFocus
+                    ? "text-white opacity-100"
+                    : "bg-foreground text-background opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                }`}
+                style={isFocus ? { backgroundColor: TRACE } : undefined}
+              >
+                {item.name}
               </span>
-            </button>
-            <span className="pointer-events-none absolute -bottom-7 left-1/2 z-10 max-w-[9rem] -translate-x-1/2 truncate rounded-md bg-foreground px-2 py-0.5 text-[11px] text-background opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100 sm:max-w-none sm:rotate-[-8deg] sm:overflow-visible sm:whitespace-nowrap">
-              {item.name}
-            </span>
-          </li>
-        );
-      })}
-    </ul>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

@@ -101,9 +101,31 @@ body::before {
   }
 }
 
+.tech-trace-ring {
+  animation: tech-trace-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes tech-trace-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    r: 14;
+  }
+  50% {
+    opacity: 0.85;
+    r: 17;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-shell--glow {
     animation: none;
+  }
+
+  .tech-trace-ring,
+  .tech-trace-line {
+    animation: none;
+    transition: none !important;
   }
 
   .stack-icon {
