@@ -5,8 +5,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { StackItem } from "@/lib/data";
 
 const TRACE = "#f97316";
-const DRAW_S = 0.72;
-const HOLD_MS = 720;
+const DRAW_S = 0.4;
+const HOLD_MS = 320;
 /** Reach-then-plant: quick lift, firm land. */
 const GAIT = [0.4, 0.02, 0.2, 1] as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
