@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { StackStage } from "@/lib/data";
+import { stack as stackData } from "@/lib/data";
 
 const TRACE = "#f97316";
 const DRAW_S = 0.9;
@@ -225,9 +226,7 @@ function FallbackMark({ name }: { name: string }) {
 
 type Point = { x: number; y: number };
 
-const EMPTY_STAGES: StackStage[] = [];
-
-/** Roadmap stages — orange path traces the learning journey icon → icon. */
+/** Roadmap stages — orange path traces icon → icon across the stack. */
 export function StackIcons({ stages }: { stages?: StackStage[] }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -241,7 +240,8 @@ export function StackIcons({ stages }: { stages?: StackStage[] }) {
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
 
-  const safeStages = Array.isArray(stages) ? stages : EMPTY_STAGES;
+  const safeStages =
+    Array.isArray(stages) && stages.length > 0 ? stages : stackData.stages;
   const items = safeStages.flatMap((s) => s.items ?? []);
   const n = items.length;
   const fromIdx = step;
