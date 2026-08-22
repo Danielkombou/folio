@@ -227,9 +227,6 @@ function FallbackMark({ name }: { name: string }) {
 
 type Point = { x: number; y: number };
 
-/** Prefer short hops so the trace never spans a full row jump. */
-const MAX_HOP = 130;
-
 function stepCurve(a: Point, b: Point, side: 1 | -1): string {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
@@ -242,44 +239,50 @@ function stepCurve(a: Point, b: Point, side: 1 | -1): string {
   return `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
 }
 
-function dist(a: Point, b: Point) {
-  return Math.hypot(b.x - a.x, b.y - a.y);
-}
+/** Group icons into visual rows (flex-wrap lines), left → right. */
+function clusterRows(pts: Point[]): number[][] {
+  const indexed = pts.map((p, i) => ({ i, x: p.x, y: p.y }));
+  indexed.sort((a, b) => a.y - b.y || a.x - b.x);
+  const rows: number[][] = [];
+  const Y_TOL = 40;
 
-/** Random nearby target — local spider walk, never a long row-wrap line. */
-function pickNearby(from: number, pts: Point[], recent: number[]): number {
-  if (pts.length < 2) return from;
-  const a = pts[from];
-  const avoid = new Set(recent.slice(-5));
-  avoid.add(from);
-
-  const near = pts
-    .map((p, i) => ({ i, d: dist(a, p) }))
-    .filter((x) => !avoid.has(x.i) && x.d > 6 && x.d <= MAX_HOP)
-    .sort((x, y) => x.d - y.d);
-
-  const pool = near.length > 0
-    ? near
-    : pts
-        .map((p, i) => ({ i, d: dist(a, p) }))
-        .filter((x) => x.i !== from && x.d > 6 && x.d <= MAX_HOP)
-        .sort((x, y) => x.d - y.d);
-
-  if (pool.length === 0) {
-    // Isolated — hop to absolute nearest (still short), else stay.
-    const closest = pts
-      .map((p, i) => ({ i, d: dist(a, p) }))
-      .filter((x) => x.i !== from)
-      .sort((x, y) => x.d - y.d)[0];
-    return closest && closest.d <= MAX_HOP * 1.35 ? closest.i : from;
+  for (const node of indexed) {
+    const last = rows[rows.length - 1];
+    if (!last) {
+      rows.push([node.i]);
+      continue;
+    }
+    const avgY = last.reduce((s, idx) => s + pts[idx].y, 0) / last.length;
+    if (Math.abs(node.y - avgY) <= Y_TOL) last.push(node.i);
+    else rows.push([node.i]);
   }
 
-  // Bias toward a few closest neighbors for a natural crawl.
-  const top = pool.slice(0, Math.min(5, pool.length));
-  return top[Math.floor(Math.random() * top.length)].i;
+  for (const row of rows) row.sort((a, b) => pts[a].x - pts[b].x);
+  return rows;
 }
 
-/** TechTrace Grid — spider-gait orange steps across the constellation. */
+/**
+ * Column zigzag: col0 down (line1→line2→…), col1 up, col2 down, …
+ * Matches: first of each line, then climb the next column, and so on.
+ */
+function columnZigzag(rows: number[][]): number[] {
+  const maxCols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+  const path: number[] = [];
+  for (let c = 0; c < maxCols; c++) {
+    if (c % 2 === 0) {
+      for (let r = 0; r < rows.length; r++) {
+        if (c < rows[r].length) path.push(rows[r][c]);
+      }
+    } else {
+      for (let r = rows.length - 1; r >= 0; r--) {
+        if (c < rows[r].length) path.push(rows[r][c]);
+      }
+    }
+  }
+  return path;
+}
+
+/** TechTrace Grid — column crawl + fresh-start reveal. */
 export function StackIcons({ items }: { items: StackItem[] }) {
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -287,22 +290,28 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   const nodeRefs = useRef<(HTMLLIElement | null)[]>([]);
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const drawnForLeg = useRef<number | null>(null);
-  const recentRef = useRef<number[]>([]);
+  const pathRef = useRef<number[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [fromIdx, setFromIdx] = useState(0);
-  const [toIdx, setToIdx] = useState(1);
+  const [toIdx, setToIdx] = useState(0);
+  const [cursor, setCursor] = useState(0);
   const [leg, setLeg] = useState(0);
   const [arrived, setArrived] = useState(false);
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
   const [ready, setReady] = useState(false);
+  const [firstPass, setFirstPass] = useState(true);
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
 
   const n = items.length;
   const from = points[fromIdx];
   const to = points[toIdx];
-  const hopOk = from && to && dist(from, to) <= MAX_HOP * 1.4;
-  const tracing = !reduce && inView && !paused && ready && n > 1 && hopOk;
+  const tracing = !reduce && inView && !paused && ready && n > 1 && from && to && fromIdx !== toIdx;
+
+  const reveal = useCallback((idx: number) => {
+    setRevealed((prev) => (prev[idx] ? prev : { ...prev, [idx]: true }));
+  }, []);
 
   const measure = useCallback(() => {
     const list = listRef.current;
@@ -335,17 +344,19 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     };
   }, [measure, items]);
 
-  // Seed a random short hop once positions exist.
+  // Build column path once positions are known; restart crawl from top-left.
   useEffect(() => {
-    if (points.length < 2 || ready) return;
-    const start = Math.floor(Math.random() * points.length);
-    const next = pickNearby(start, points, []);
-    if (next === start) return;
-    setFromIdx(start);
-    setToIdx(next);
-    recentRef.current = [start];
+    if (points.length < 2) return;
+    const path = columnZigzag(clusterRows(points));
+    if (path.length < 2) return;
+    pathRef.current = path;
+    setFromIdx(path[0]);
+    setToIdx(path[1]);
+    setCursor(0);
+    setLeg((l) => l + 1);
     setReady(true);
-  }, [points, ready]);
+    reveal(path[0]);
+  }, [points, reveal]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -374,25 +385,33 @@ export function StackIcons({ items }: { items: StackItem[] }) {
   }, []);
 
   function advanceWalk() {
-    const landed = toIdx;
-    recentRef.current = [...recentRef.current, landed].slice(-8);
-    const next = pickNearby(landed, points, recentRef.current);
-    if (next === landed) {
-      // No short hop from here — soft teleport (new short pair, no long draw).
-      let seed = Math.floor(Math.random() * n);
-      let hop = pickNearby(seed, points, [seed]);
-      for (let t = 0; t < 16 && (hop === seed || dist(points[seed], points[hop]) > MAX_HOP); t++) {
-        seed = Math.floor(Math.random() * n);
-        hop = pickNearby(seed, points, [seed]);
+    const path = pathRef.current;
+    if (path.length < 2) return;
+
+    const nextCursor = cursor + 1;
+    // Finished the route — soft loop to start (no long wrap line).
+    if (nextCursor >= path.length - 1) {
+      if (firstPass) {
+        setFirstPass(false);
+        setRevealed((prev) => {
+          const all: Record<number, boolean> = { ...prev };
+          for (let i = 0; i < n; i++) all[i] = true;
+          return all;
+        });
       }
-      if (hop === seed) return;
-      setFromIdx(seed);
-      setToIdx(hop);
-      recentRef.current = [seed];
-    } else {
-      setFromIdx(landed);
-      setToIdx(next);
+      setFromIdx(path[0]);
+      setToIdx(path[1]);
+      setCursor(0);
+      setLeg((l) => l + 1);
+      return;
     }
+
+    const landed = path[nextCursor];
+    const next = path[nextCursor + 1];
+    reveal(landed);
+    setFromIdx(landed);
+    setToIdx(next);
+    setCursor(nextCursor);
     setLeg((l) => l + 1);
   }
 
@@ -400,10 +419,11 @@ export function StackIcons({ items }: { items: StackItem[] }) {
     if (drawnForLeg.current === leg || paused || reduce || !inView) return;
     drawnForLeg.current = leg;
     setArrived(true);
+    reveal(toIdx);
     holdTimer.current = setTimeout(advanceWalk, HOLD_MS);
   }
 
-  const segmentD = from && to && hopOk ? stepCurve(from, to, leg % 2 === 0 ? 1 : -1) : "";
+  const segmentD = from && to && fromIdx !== toIdx ? stepCurve(from, to, leg % 2 === 0 ? 1 : -1) : "";
   const planting = tracing && arrived;
 
   return (
@@ -420,7 +440,6 @@ export function StackIcons({ items }: { items: StackItem[] }) {
             height={size.h}
             aria-hidden
           >
-            {/* Planted foot — stays on the origin while the next leg reaches. */}
             <motion.circle
               key={`plant-${leg}`}
               cx={from.x}
@@ -464,6 +483,7 @@ export function StackIcons({ items }: { items: StackItem[] }) {
           const lift = (i % 3) * 8 - 8;
           const isActive = planting && i === toIdx;
           const isPlanted = tracing && !paused && i === fromIdx;
+          const isShown = !firstPass || !!revealed[i] || reduce;
 
           return (
             <li
@@ -489,14 +509,12 @@ export function StackIcons({ items }: { items: StackItem[] }) {
                 aria-current={isActive ? "true" : undefined}
                 className="inline-flex text-foreground/55 transition duration-300 hover:-translate-y-1 hover:scale-110 hover:text-foreground focus-visible:-translate-y-1 focus-visible:scale-110 focus-visible:outline-none"
                 style={{ color: isMono ? undefined : item.color }}
-                animate={
-                  isActive
-                    ? { scale: 1.14 }
-                    : isPlanted
-                      ? { scale: 1.06 }
-                      : { scale: 1 }
-                }
-                transition={{ duration: 0.4, ease: EASE }}
+                initial={false}
+                animate={{
+                  opacity: isShown ? 1 : 0,
+                  scale: !isShown ? 0.72 : isActive ? 1.14 : isPlanted ? 1.06 : 1,
+                }}
+                transition={{ duration: 0.45, ease: EASE }}
               >
                 <span
                   className={`grayscale transition duration-300 group-hover:grayscale-0 group-focus-within:grayscale-0 ${
